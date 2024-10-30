@@ -1,18 +1,18 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header elevated class="bg-dark">
       <q-toolbar>
         <q-btn
           flat
           dense
           round
-          icon="menu"
+          icon="las la-bars"
           aria-label="Menu"
           @click="toggleLeftDrawer"
         />
 
         <q-toolbar-title>
-          Quasar App
+          Tasa Cambiaria
         </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
@@ -23,8 +23,9 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
+      class="bg-dark"
     >
-      <q-list>
+      <q-list class="text-white">
         <q-item-label
           header
         >
@@ -55,47 +56,41 @@ defineOptions({
 
 const linksList = [
   {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev'
+    title: 'Calculadora',
+    caption: '',
+    icon: 'las la-calculator',
+    link: 'Calculadora'
   },
   {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework'
+    title: 'Tasa BCV',
+    caption: '',
+    icon: 'las la-chart-bar',
+    link: 'TasaBCV'
   },
   {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev'
+    title: 'Historial',
+    caption: '',
+    icon: 'las la-clipboard',
+    link: 'Historial'
   },
   {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev'
+    title: 'PerfilesDePago',
+    caption: '',
+    icon: 'las la-file-invoice-dollar',
+    link: 'PerfilDePago'
   },
   {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev'
+    title: 'Configuracion',
+    caption: '',
+    icon: 'las la-cog',
+    link: 'Configuracion'
   },
   {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev'
+    title: 'Informacion',
+    caption: '',
+    icon: 'las la-info',
+    link: 'Informacion'
   },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev'
-  }
 ]
 
 const leftDrawerOpen = ref(false)
@@ -104,3 +99,4 @@ function toggleLeftDrawer () {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 </script>
+
