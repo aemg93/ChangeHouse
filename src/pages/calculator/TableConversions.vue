@@ -1,84 +1,138 @@
 <template>
-  <div>
-    <h1>Conversor de Divisas</h1>
-    <q-btn @click="fetchRates" label="Actualizar Tasas" />
-    <div v-if="loading">Cargando tasas de cambio...</div>
-    <div v-else-if="conversionError">{{ conversionError }}</div>
-    <div v-else>
-      <input type="number" v-model="amount" placeholder="Monto" />
-      <select v-model="fromCurrency" :disabled="isLoadingOrNoRates">
-        <option v-for="currency in currencyOptions" :key="currency" :value="currency">
-          {{ currency }}
-        </option>
-      </select>
-      <select v-model="toCurrency" :disabled="isLoadingOrNoRates">
-        <option v-for="currency in currencyOptions" :key="currency" :value="currency">
-          {{ currency }}
-        </option>
-      </select>
-      <button @click="convertCurrency">Convertir</button>
-      <div v-if="convertedAmount !== null">
-        <p>{{ amount }} {{ fromCurrency }} = {{ convertedAmount }} {{ toCurrency }}</p>
-      </div>
-    </div>
+  <q-page>
+  <div class="">
+    <input
+      v-model.number="amount"
+      placeholder="Cantidad a convertir"
+      type="number"
+      min="0"
+      class="q-input"
+      @input="validateInput"
+    />
+    <q-select
+      v-model="currencyFrom"
+      :options="options"
+      class="select text-white q-mx-auto"
+      filled
+      label="Selecciona de"
+      emit-value
+      map-options
+      dropdown-icon="las la-angle-down"
+    />
+
+    <q-select
+      v-model="currencyTo"
+      :options="filteredOptions"
+      class="select"
+      filled
+      label="Selecciona a"
+      emit-value
+      map-options
+      dropdown-icon="fas las la-angle-down"
+    />
+
+    <q-btn @click="convertCurrency" :disabled="loading || !validAmount || !currencyFrom || !currencyTo"  class="button " label="Convertir" />
+    <p v-if="loading" class="loading ">Convirtiendo...</p>
+    <p v-if="!loading && result !== null" class="result">Resultado: {{ result }}</p>
+    <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
   </div>
+  </q-page>
 </template>
 
-<script>
-import { ref, onMounted, computed } from 'vue';
+<script setup>
+import { ref, computed } from 'vue';
 import { useCurrencyStore } from 'src/store/currencyStore';
 
-export default {
-  setup() {
-    const currencyStore = useCurrencyStore();
-    const {rates, loading, fetchRates} = currencyStore;
+const amount = ref(1);
+const currencyFrom = ref('');
+const currencyTo = ref('');
+const result = ref(null);
+const store = useCurrencyStore();
+const loading = store.loading;
+const errorMessage = ref(store.error);
 
-    const amount = ref(0);
-    const fromCurrency = ref('USD');
-    const toCurrency = ref('EUR');
-    const convertedAmount = ref(null);
-    const conversionError = ref(null);
+const validAmount = computed(() => amount.value > 0);
 
-    const isLoadingOrNoRates = computed(() => loading.value || !Object.keys(rates.value).length);
-    const currencyOptions = computed(() => Object.keys(rates.value));
+const fetchRates = async () => {
+  await store.fetchRates();
+};
+fetchRates();
 
-    const getConversionRate = () => {
-      if (!rates.value[fromCurrency.value] || !rates.value[toCurrency.value]) {
-        conversionError.value = 'Tasas no disponibles o divisas no válidas.';
-        return null;
-      }
-      conversionError.value = null; // Clear previous error
-      return rates.value[toCurrency.value] / rates.value[fromCurrency.value];
-    };
+const rates = computed(() => store.rates);
+const options = computed(() => Object.keys(rates.value).map(currency =>
+  ({ label: currency, value: currency })));
 
-    const convertCurrency = () => {
-      if (amount.value <= 0) {
-        conversionError.value = 'Por favor, ingresa un monto válido.';
-        return;
-      }
-      const rate = getConversionRate();
-      if (rate) {
-        convertedAmount.value = (amount.value * rate).toFixed(2);
-      }
-    };
 
-    onMounted(() => {
-      fetchRates();
-    });
+const filteredOptions = computed(() => {
+  return options.value.filter(option => option.value !== currencyFrom.value);
+});
 
-    return {
-      rates,
-      loading,
-      fetchRates,
-      amount,
-      fromCurrency,
-      toCurrency,
-      convertCurrency,
-      convertedAmount,
-      conversionError,
-      isLoadingOrNoRates,
-      currencyOptions,
-    };
-  },
+const convertCurrency = () => {
+  try {
+    result.value = store.convertCurrency(amount.value, currencyFrom.value, currencyTo.value);
+  } catch (error) {
+    errorMessage.value = error.message;
+  }
+};
+const validateInput = (event) => {
+  const value = event.target.value;
+  const sanitizedInput = value.replace(/[^0-9.]/g, '');
+  amount.value = sanitizedInput ? parseFloat(sanitizedInput) : 0;
 };
 </script>
+
+<style scoped>
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.q-input {
+  border: none;
+  border-bottom: 2px solid #03ff03;
+  outline: none;
+  background: transparent;
+  color: #03ff03;
+  font-size: 16px;
+  text-align: right;
+}
+
+.q-input:focus {
+  border-bottom: 2px solid #03ff03;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.q-input,
+.select,
+.button {
+  margin: 10px 0;
+  width: 200px;
+}
+
+.loading,
+.result,
+.error {
+  margin-top: 10px;
+}
+.select {
+  border: none;
+  background: transparent;
+  color: #03ff03;
+  border-bottom: 2px solid #03ff03;
+  margin: 0 auto
+}
+
+
+</style>
