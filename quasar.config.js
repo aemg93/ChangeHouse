@@ -10,6 +10,7 @@
 
 
 const { configure } = require('quasar/wrappers');
+const path = require('node:path');
 
 
 module.exports = configure(function (/* ctx */) {
@@ -41,7 +42,7 @@ module.exports = configure(function (/* ctx */) {
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
 
       'roboto-font', // optional, you are not bound to it
-      //'material-icons', // optional, you are not bound to it
+      'material-icons', // optional, you are not bound to it
     ],
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#build
@@ -61,6 +62,7 @@ module.exports = configure(function (/* ctx */) {
       // publicPath: '/',
       // analyze: true,
       // env: {},
+      env: require('dotenv').config().parsed,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -76,7 +78,12 @@ module.exports = configure(function (/* ctx */) {
             lintCommand: 'eslint "./**/*.{js,mjs,cjs,vue}"'
           }
         }, { server: false }]
-      ]
+      ],
+      extendViteConf (viteConf, { isServer, isClient }) {
+        Object.assign(viteConf.resolve.alias, {
+          "@": path.join(__dirname, './src')
+        })
+      }
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
@@ -202,6 +209,18 @@ module.exports = configure(function (/* ctx */) {
 
       // extendBexScriptsConf (esbuildConf) {}
       // extendBexManifestJson (json) {}
+    },
+
+    devServer: {
+      open: true,
+      proxy: {
+        '/api': {
+          target: 'https://giga-api.jose-gutierrez.com',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, '')
+        }
+      }
     }
+
   }
 });

@@ -57,7 +57,7 @@ const linksList = [
   {
     title: 'Calculadora',
     caption: '',
-    icon: 'las la-calculator',
+    icon: 'las la-exchange-rates',
     link: 'Calculadora'
   },
   {
