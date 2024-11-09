@@ -2,18 +2,18 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    redirect: { name: 'Index' }, // Redirige a la ruta Index
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'MyRate.vue', name:'TasaBCV', component: () => import('pages/MyRate.vue') },
-      { path: 'MyRecord', name:'Historial', component: () => import('pages/MyRecord.vue') },
-      { path: 'PaymentProfiles', name:'PerfilDePago', component: () => import('pages/PaymentProfiles.vue') },
-      { path: 'MyConfiguration', name:'Configuracion', component: () => import('pages/MyConfiguration.vue') },
-      { path: 'MyInformation', name:'Informacion', component: () => import('pages/MyInformation.vue') },
+      { path: 'Index', name: 'Index', component: () => import('pages/IndexPage.vue') },
+      { path: 'My-Rate', name: 'TasaBCV', component: () => import('pages/MyRate.vue') },
+      { path: 'My-Record', name: 'Historial', component: () => import('pages/MyRecord.vue') },
+      { path: 'Payment-Profiles', name: 'PerfilDePago', component: () => import('pages/PaymentProfiles.vue') },
+      { path: 'My-Configuration', name: 'Configuracion', component: () => import('pages/MyConfiguration.vue') },
+      { path: 'My-Information', name: 'Informacion', component: () => import('pages/MyInformation.vue') },
     ]
   },
 
-  // Always leave this as last one,
-  // but you can also remove it
+  // Siempre dejar esto como el último
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')
