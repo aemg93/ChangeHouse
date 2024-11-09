@@ -8,7 +8,7 @@
           v-model="date"
           mask="date"
           :rules="['date']"
-          input-class="text-fluorescent-green"
+          input-class=""
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -33,7 +33,7 @@
           label="Cantidad"
           fill-mask="0"
           reverse-fill-mask
-          input-class="text-right text-fluorescent-green"
+          input-class="text-right "
           @input="validateInput"
         />
 
@@ -42,18 +42,18 @@
           :options="filteredOptionsFrom"
           use-input
           input-debounce="0"
-          class="select q-mt-sm text-fluorescent-green"
+          class="select q-mt-sm "
           filled
           label="Desde"
           emit-value
           map-options
           dropdown-icon="las la-angle-down"
-          input-class="text-fluorescent-green"
+          input-class=""
           @filter="filterFrom"
         >
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey">
+              <q-item-section>
                 Sin resultados
               </q-item-section>
             </q-item>
@@ -65,18 +65,18 @@
           :options="filteredOptionsTo"
           use-input
           input-debounce="0"
-          class="select q-mt-sm text-fluorescent-green"
+          class="select q-mt-sm "
           filled
           label="A"
           emit-value
           map-options
           dropdown-icon="fas las la-angle-down"
-          input-class="text-fluorescent-green"
+          input-class=""
           @filter="filterTo"
         >
           <template v-slot:no-option>
             <q-item>
-              <q-item-section class="text-grey">
+              <q-item-section>
                 Sin Resultados
               </q-item-section>
             </q-item>
@@ -85,23 +85,23 @@
       </div>
 
       <div class="q-mt-md q-mb-md">
-        <div v-if="!generalStore.loading && result !== null" class="result text-fluorescent-green">{{ `${currencyFormat(amount, currencyFrom)}` }}</div>
-        <div v-if="!generalStore.loading && result !== null" class="result text-fluorescent-green">Equivale a</div>
-        <div v-if="generalStore.error" class="error text-fluorescent-green">{{ generalStore.error }}</div>
+        <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(amount, currencyFrom)}` }}</div>
+        <div v-if="!generalStore.loading && result !== null" class="result ">Equivale a</div>
+        <div v-if="generalStore.error" class="error ">{{ generalStore.error }}</div>
       </div>
 
-      <q-card dark bordered class="bg-grey-9 my-card">
+      <q-card dark bordered class="bg-positive text-dark my-card">
         <q-card-section>
-          <div class="text-subtitle2 text-fluorescent-green" v-if="showParallelRate">Tasa oficial</div>
-          <div v-if="!generalStore.loading && result !== null" class="result text-fluorescent-green">{{ `${currencyFormat(result, currencyTo)}` }}</div>
+          <div class="text-subtitle2 " v-if="showParallelRate">Tasa oficial</div>
+          <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
         <q-separator dark inset v-if="showParallelRate" />
         <q-card-section v-if="showParallelRate">
-          <div class="text-subtitle2 text-fluorescent-green">Tasa paralela</div>
-          <div v-if="!generalStore.loading && result !== null" class="result text-fluorescent-green">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
+          <div class="text-subtitle2 ">Tasa paralela</div>
+          <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
         </q-card-section>
       </q-card>
-      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md text-fluorescent-green">De {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
+      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md ">De {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
 
     </div>
   </q-page>
@@ -219,9 +219,10 @@ const validateInput = (event) => {
 };
 </script>
 <style scoped>
-.text-fluorescent-green {
-  color: #00FF00; /* Verde fluorescente */
+.my-card {
+  font-size: 15px;
+  font-weight: bold;
+  font-family: DialogInput;
 }
-
 </style>
 

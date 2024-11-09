@@ -7,7 +7,7 @@
       </div>
       <TableConversions />
     </div>
-  </q-page>
+  </q-page>z
 </template>
 
 <script setup>

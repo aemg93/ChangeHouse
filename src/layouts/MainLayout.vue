@@ -39,10 +39,10 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      class="bg-dark"
+      class=""
     >
       <q-list>
-        <q-item-label header class="text-white text-center link-menu">
+        <q-item-label header class="text-black text-center link-menu">
          menu
         </q-item-label>
 
@@ -54,7 +54,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container class="bg-grey-9">
+    <q-page-container class="">
       <router-view />
     </q-page-container>
   </q-layout>
@@ -124,7 +124,7 @@ function shareContent() {
 <style scoped>
 .active-link {
   background-color: #080808 !important;
-  color: #40fd05 !important;
+  color: #ffffff !important;
 }
 .link-menu {
   font-size: 2rem;

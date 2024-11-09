@@ -51,8 +51,5 @@ const isActive = computed(() => route.name === props.link);
 </script>
 
 <style scoped>
-.active-link {
-  background-color: #080808 !important;
-  color: #40fd05 !important;
-}
+
 </style>
