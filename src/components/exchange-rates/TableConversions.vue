@@ -84,7 +84,7 @@
         </q-select>
       </div>
 
-      <div class="q-mt-md q-mb-md">
+      <div class="q-mt-md q-mb-md result  ">
         <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(amount, currencyFrom)}` }}</div>
         <div v-if="!generalStore.loading && result !== null" class="result ">Equivale a</div>
         <div v-if="generalStore.error" class="error ">{{ generalStore.error }}</div>
@@ -219,7 +219,8 @@ const validateInput = (event) => {
 };
 </script>
 <style scoped>
-.my-card {
+.my-card
+.result{
   font-size: 15px;
   font-weight: bold;
   font-family: DialogInput;
