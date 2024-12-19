@@ -20,7 +20,7 @@
                   :locale="locale"
                 >
                   <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
+                    <q-btn v-close-popup label="Cerrar" color="primary" flat></q-btn>
                   </div>
                 </q-date>
               </q-popup-proxy>
@@ -133,13 +133,13 @@ const currencyStore = useCurrencyStore();
 const exchangeRateStore = useExchangeRateStore();
 const generalStore = useGeneralStore();
 const locale = ref({
-  days: 'Domingo_Lunes_Martes_Miércoles_Jueves_Viernes_Sábado'.split('_'),
-  daysShort: 'Dom_Lun_Mar_Mié_Jue_Vie_Sáb'.split('_'),
-  months: 'Enero_Febrero_Marzo_Abril_Mayo_Junio_Julio_Agosto_Septiembre_Octubre_Noviembre_Diciembre'.split('_'),
-  monthsShort: 'Ene_Feb_Mar_Abr_May_Jun_Jul_Ago_Sep_Oct_Nov_Dic'.split('_'),
+  days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+  daysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+  months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+  monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
   firstDayOfWeek: 1,
   format24h: true,
-  pluralDay: 'dias'
+  pluralDay: 'dias',
 });
 
 const disableFutureDates = (inputDate) => inputDate <= getTodayForCalendar();
