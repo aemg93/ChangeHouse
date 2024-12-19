@@ -1,13 +1,13 @@
 <template>
   <q-page>
     <div class="q-mt-xl q-mx-auto text-center" style="max-width: 70%; width: 100%;">
-      <div class="text-center">
-        <img src="@/assets/logoDivisas.svg" alt="Cambio de Divisas" />
-        <h6 class="q-ma-none">Cambio de Divisas</h6>
+      <div class="text-center q-mb-md">
+        <img src="@/assets/logoDivisas.svg" alt="Equivalencia de Divisas" />
+        <h6 class="q-ma-none">Equivalencia de Divisas</h6>
       </div>
       <TableConversions />
     </div>
-  </q-page>z
+  </q-page>
 </template>
 
 <script setup>

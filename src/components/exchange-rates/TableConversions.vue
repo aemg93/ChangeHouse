@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="container">
-      <div class="q-pa-md" style="max-width: 100%">
+      <div style="max-width: 100%">
 
         <q-input
           filled
@@ -30,7 +30,7 @@
         <q-input
           filled
           v-model.number="amount"
-          label="Cantidad"
+          label="Monto"
           fill-mask="0"
           reverse-fill-mask
           input-class="text-right "
@@ -44,7 +44,7 @@
           input-debounce="0"
           class="select q-mt-sm "
           filled
-          label="Desde"
+          label="Moneda de origen"
           emit-value
           map-options
           dropdown-icon="las la-angle-down"
@@ -54,7 +54,7 @@
           <template v-slot:no-option>
             <q-item>
               <q-item-section>
-                Sin resultados
+                No hay resultados disponibles
               </q-item-section>
             </q-item>
           </template>
@@ -67,7 +67,7 @@
           input-debounce="0"
           class="select q-mt-sm "
           filled
-          label="A"
+          label="Moneda destino"
           emit-value
           map-options
           dropdown-icon="fas las la-angle-down"
@@ -77,14 +77,14 @@
           <template v-slot:no-option>
             <q-item>
               <q-item-section>
-                Sin Resultados
+                No hay resultados disponibles
               </q-item-section>
             </q-item>
           </template>
         </q-select>
       </div>
 
-      <div class="q-mt-md q-mb-md result  ">
+      <div class="q-mt-md q-mb-md result">
         <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(amount, currencyFrom)}` }}</div>
         <div v-if="!generalStore.loading && result !== null" class="result ">Equivale a</div>
         <div v-if="generalStore.error" class="error ">{{ generalStore.error }}</div>
@@ -92,16 +92,16 @@
 
       <q-card dark bordered class="bg-positive text-dark my-card">
         <q-card-section>
-          <div class="text-subtitle2 " v-if="showParallelRate">Tasa oficial</div>
+          <div class="text-subtitle2 " v-if="showParallelRate">Equivalencia oficial</div>
           <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
         <q-separator dark inset v-if="showParallelRate" />
         <q-card-section v-if="showParallelRate">
-          <div class="text-subtitle2 ">Tasa paralela</div>
+          <div class="text-subtitle2 ">Equivalencia paralela</div>
           <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
         </q-card-section>
       </q-card>
-      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md ">De {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
+      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md ">Resultado de la conversión: de {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
 
     </div>
   </q-page>

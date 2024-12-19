@@ -7,28 +7,19 @@
           dense
           round
           icon="las la-bars"
-          aria-label="Menu"
+          aria-label="Manú principal"
           @click="toggleLeftDrawer"
           class="text-white"
         />
 
         <q-toolbar-title>
-          Tasa Cambiaria
+          {{ appName }}
         </q-toolbar-title>
-
-        <q-btn
-          flat
-          dense
-          icon="las la-sync"
-          aria-label="Recargar"
-          @click="reloadPage"
-          class="text-white"
-        />
         <q-btn
           flat
           dense
           icon="las la-share-alt"
-          aria-label="Compartir"
+          aria-label="Compartir la tasa de cambio"
           @click="shareContent"
           class="text-white"
         />
@@ -43,7 +34,7 @@
     >
       <q-list>
         <q-item-label header class="text-black text-center link-menu">
-         menu
+         Menú principal
         </q-item-label>
 
         <EssentialLink
@@ -69,25 +60,21 @@ defineOptions({
   name: 'MainLayout'
 })
 
+const appName = process.env.APP_NAME;
+
 const linksList = [
   {
     title: 'Tasa de Cambio',
     caption: '',
     icon: 'las la-exchange-alt',
-    link: 'Index'
+    link: 'index'
   },
   {
-    title: 'Configuracion',
+    title: 'Ajustes',
     caption: '',
     icon: 'las la-cog',
-    link: 'Configuracion'
-  },
-  {
-    title: 'Informacion',
-    caption: '',
-    icon: 'las la-info',
-    link: 'Informacion'
-  },
+    link: 'settings'
+  }
 ]
 
 const leftDrawerOpen = ref(false)
@@ -95,10 +82,6 @@ const route = useRoute()
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
-}
-
-function reloadPage() {
-  location.reload()
 }
 
 function shareContent() {
