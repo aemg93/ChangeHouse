@@ -15,15 +15,15 @@ const generalStore = useGeneralStore();
 
 <style scoped>
 .overlay {
-  position: fixed; /* Fija el fondo */
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco translúcido */
+  background-color: rgba(255, 255, 255, 0.8);
   display: flex;
-  justify-content: center; /* Centrado horizontal */
-  align-items: center; /* Centrado vertical */
-  z-index: 9999; /* Para estar encima de todo */
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 </style>
