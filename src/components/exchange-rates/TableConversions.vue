@@ -85,20 +85,24 @@
       </div>
 
       <div class="q-mt-md q-mb-md result">
-        <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(amount, currencyFrom)}` }}</div>
-        <div v-if="!generalStore.loading && result !== null" class="result ">Equivale a</div>
+        <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(amount, currencyFrom)}` }} equivale a</div>
         <div v-if="generalStore.error" class="error ">{{ generalStore.error }}</div>
       </div>
 
       <q-card dark bordered class="bg-positive text-dark my-card">
-        <q-card-section>
-          <div class="text-subtitle2 " v-if="showParallelRate">Equivalencia oficial</div>
+        <q-card-section class="show-result">
+          <div class="text-subtitle2" v-if="showParallelRate">Tasa oficial</div>
           <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
         <q-separator dark inset v-if="showParallelRate" />
-        <q-card-section v-if="showParallelRate">
-          <div class="text-subtitle2 ">Equivalencia paralela</div>
+        <q-card-section class="show-result" v-if="showParallelRate">
+          <div class="text-subtitle2">Tasa paralela</div>
           <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
+        </q-card-section>
+        <q-separator dark inset v-if="showParallelRate" />
+        <q-card-section class="show-result" v-if="showParallelRate && averageRate !== null">
+          <div class="text-subtitle2">Promedio de tasas</div>
+          <div class="result q-mb-sm">{{ `${currencyFormat(averageRate, currencyTo)}` }}</div>
         </q-card-section>
       </q-card>
       <div v-if="!generalStore.loading && result !== null" class="result q-mt-md ">Resultado de la conversión: de {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
@@ -140,6 +144,17 @@ const options = computed(() =>
 );
 
 const showParallelRate = computed(() => currencyFrom.value === 'VES' || currencyTo.value === 'VES');
+
+const averageRate = computed(() => {
+  const rate = result.value;
+  const parallelRate = parallelResult.value;
+
+  if (rate !== null && !isNaN(rate) && parallelRate !== null && !isNaN(parallelRate)) {
+    return (rate + parallelRate) / 2;
+  }
+
+  return null;
+});
 
 const filteredOptionsFrom = computed(() => {
   return options.value.filter(option => {
@@ -247,8 +262,10 @@ const validateInput = (event) => {
 };
 </script>
 <style scoped>
-.my-card
-.result{
+.show-result {
+  margin: -10px 10px;
+}
+.my-card .result {
   font-size: 20px;
   font-weight: bold;
   font-family: DialogInput;
