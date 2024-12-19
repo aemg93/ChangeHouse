@@ -1,5 +1,5 @@
-import { ref } from 'vue';
-
 export const state = () => ({
-  rates: ref(JSON.parse(localStorage.getItem('currencyRates')) || {})
+  loading: false, // Estado de carga
+  error: '', // Mensaje de error
+  initialLoad: true // Bandera para la lógica de carga inicial
 });

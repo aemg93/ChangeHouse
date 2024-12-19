@@ -1,17 +1,11 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { state } from './state';
+import { getters } from './getters';
+import { actions } from './actions';
 
-export const useGeneralStore = defineStore('general', () => {
-  const loading = ref(false);
-  const error = ref('');
-
-  const setLoading = (value) => {
-    loading.value = value;
-  };
-
-  const setError = (message) => {
-    error.value = message;
-  };
-
-  return { loading, error, setLoading, setError };
+export const useGeneralStore = defineStore({
+  id: 'generalStore',
+  state,
+  getters,
+  actions
 });

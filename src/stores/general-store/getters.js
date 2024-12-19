@@ -1,4 +1,5 @@
 export const getters = {
-  getRates: (state) => state.rates.value,
-  getLoading: (state) => state.loading.value,
+  getLoading: (state) => state.loading,
+  getError: (state) => state.error,
+  getInitialLoad: (state) => state.initialLoad
 };

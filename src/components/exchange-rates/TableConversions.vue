@@ -128,13 +128,10 @@ const currencyStore = useCurrencyStore();
 const exchangeRateStore = useExchangeRateStore();
 const generalStore = useGeneralStore();
 
-// Disable future dates
 const disableFutureDates = (inputDate) => inputDate <= getTodayForCalendar();
 
-// Remove accents from a string
 const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-// Computed properties
 const options = computed(() =>
   currencyStore.getCurrencies.map(currency => ({
     label: currency.name,
@@ -160,7 +157,6 @@ const filteredOptionsTo = computed(() => {
   });
 });
 
-// Computed properties for symbols and coin names
 const getCurrencyProperty = (currencyCode, property) => {
   const currency = currencyStore.getCurrencies.find(currency => currency.code === currencyCode);
   return currency ? currency[property] : currencyCode;
@@ -171,7 +167,6 @@ const symbolCurrencyTo = computed(() => getCurrencyProperty(currencyTo.value, 's
 const nameCurrencyFrom = computed(() => getCurrencyProperty(currencyFrom.value, 'name'));
 const nameCurrencyTo = computed(() => getCurrencyProperty(currencyTo.value, 'name'));
 
-// Filter for search inputs
 const filterFrom = (val, update) => {
   searchFrom.value = val;
   update();
@@ -182,7 +177,6 @@ const filterTo = (val, update) => {
   update();
 };
 
-// Update of conversion results
 const updateResults = () => {
   const rate = exchangeRateStore.getExchangeRate;
   const parallelRate = exchangeRateStore.getParallelRate;
@@ -190,21 +184,42 @@ const updateResults = () => {
   parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate).toFixed(4)) : 0;
 };
 
-//Initial assembly
 onMounted(async () => {
+  if (generalStore.getInitialLoad) {
+    // Carga inicial: intenta cargar `currencyFrom` y `currencyTo` desde el localStorage, si no, usa valores por defecto
+    const storedFrom = localStorage.getItem('currencyFrom') || 'USD';
+    const storedTo = localStorage.getItem('currencyTo') || 'VES';
+
+    currencyFrom.value = storedFrom;
+    currencyTo.value = storedTo;
+
+    // Sobreescribe las monedas auxiliares (variables auxiliares)
+    generalStore.updateCurrentCurrencies(currencyFrom.value, currencyTo.value);
+
+    // Marcar como cargado inicial
+    generalStore.setInitialLoad(false);
+  } else {
+    // Si no es la carga inicial, toma los valores actuales de las monedas auxiliares
+    const currentFrom = localStorage.getItem('currentCurrencyFrom') || 'USD';
+    const currentTo = localStorage.getItem('currentCurrencyTo') || 'VES';
+
+    currencyFrom.value = currentFrom;
+    currencyTo.value = currentTo;
+  }
+
+  // Realiza la carga de monedas y tasas
   await currencyStore.fetchCurrencies();
   const promises = [
     exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value })
   ];
 
   if (showParallelRate.value) {
-    promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value })); // Añade la segunda llamada
+    promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value }));
   }
 
-  await Promise.all(promises); // Ejecuta ambas promesas en paralelo si corresponde
+  await Promise.all(promises);
 });
 
-// Reactive observers
 watch([currencyFrom, currencyTo, date], async () => {
   if (currencyFrom.value && currencyTo.value && date.value) {
     const promises = [
@@ -215,13 +230,16 @@ watch([currencyFrom, currencyTo, date], async () => {
       promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }));
     }
 
-    await Promise.all(promises); // Ejecuta ambas llamadas en paralelo si corresponde
+    await Promise.all(promises);
   }
+});
+
+watch([currencyFrom, currencyTo], ([newFrom, newTo]) => {
+  generalStore.updateCurrentCurrencies(newFrom, newTo);
 });
 
 watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], updateResults);
 
-// Validate the input of the amount
 const validateInput = (event) => {
   const value = event.target.value;
   const sanitizedInput = value.replace(/[^0-9.]/g, '');
