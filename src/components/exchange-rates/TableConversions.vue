@@ -101,7 +101,7 @@
         </q-card-section>
         <q-separator dark inset v-if="showParallelRate" />
         <q-card-section class="show-result" v-if="showParallelRate && averageRate !== null">
-          <div class="text-subtitle2">Promedio de tasas</div>
+          <div class="text-subtitle2">Tasa promedio</div>
           <div class="result q-mb-sm">{{ `${currencyFormat(averageRate, currencyTo)}` }}</div>
         </q-card-section>
       </q-card>
@@ -177,8 +177,6 @@ const getCurrencyProperty = (currencyCode, property) => {
   return currency ? currency[property] : currencyCode;
 };
 
-const symbolCurrencyFrom = computed(() => getCurrencyProperty(currencyFrom.value, 'symbol'));
-const symbolCurrencyTo = computed(() => getCurrencyProperty(currencyTo.value, 'symbol'));
 const nameCurrencyFrom = computed(() => getCurrencyProperty(currencyFrom.value, 'name'));
 const nameCurrencyTo = computed(() => getCurrencyProperty(currencyTo.value, 'name'));
 

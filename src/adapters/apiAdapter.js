@@ -101,7 +101,6 @@ async function fetchExchangeRate(source, target, date) {
   const generalStore = useGeneralStore(); // Instancia el store
   try {
     generalStore.loading = true; // Loading comienza
-    console.log(generalStore.loading)
 
     const token = await getToken();
     if (!token) {
@@ -129,7 +128,6 @@ async function fetchExchangeRate(source, target, date) {
     return null; // Devuelve null en caso de error
   } finally {
     generalStore.loading = false; // Loading termina
-    console.log(generalStore.loading)
   }
 }
 
@@ -137,7 +135,6 @@ async function fetchParallelRate(source, target, date) {
   const generalStore = useGeneralStore(); // Instancia el store
   try {
     generalStore.loading = true; // Loading comienza
-    console.log(generalStore.loading)
 
     const token = await getToken();
     if (!token) {
@@ -165,7 +162,6 @@ async function fetchParallelRate(source, target, date) {
     return null; // Devuelve null en caso de error
   } finally {
     generalStore.loading = false; // Loading termina
-    console.log(generalStore.loading)
   }
 }
 
