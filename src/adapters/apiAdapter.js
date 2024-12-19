@@ -1,5 +1,5 @@
 import { api } from 'boot/axios';
-import { useGeneralStore } from 'src/store/general-store'; // Importa el store
+import { useGeneralStore } from '@/stores/general-store'; // Importa el store
 const API_BASE_URL = process.env.BASE_URL;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -101,6 +101,7 @@ async function fetchExchangeRate(source, target, date) {
   const generalStore = useGeneralStore(); // Instancia el store
   try {
     generalStore.loading = true; // Loading comienza
+    console.log(generalStore.loading)
 
     const token = await getToken();
     if (!token) {
@@ -128,6 +129,7 @@ async function fetchExchangeRate(source, target, date) {
     return null; // Devuelve null en caso de error
   } finally {
     generalStore.loading = false; // Loading termina
+    console.log(generalStore.loading)
   }
 }
 
@@ -135,6 +137,7 @@ async function fetchParallelRate(source, target, date) {
   const generalStore = useGeneralStore(); // Instancia el store
   try {
     generalStore.loading = true; // Loading comienza
+    console.log(generalStore.loading)
 
     const token = await getToken();
     if (!token) {
@@ -162,6 +165,7 @@ async function fetchParallelRate(source, target, date) {
     return null; // Devuelve null en caso de error
   } finally {
     generalStore.loading = false; // Loading termina
+    console.log(generalStore.loading)
   }
 }
 

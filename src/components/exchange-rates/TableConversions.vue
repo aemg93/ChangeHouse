@@ -93,12 +93,12 @@
       <q-card dark bordered class="bg-positive text-dark my-card">
         <q-card-section>
           <div class="text-subtitle2 " v-if="showParallelRate">Equivalencia oficial</div>
-          <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(result, currencyTo)}` }}</div>
+          <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
         <q-separator dark inset v-if="showParallelRate" />
         <q-card-section v-if="showParallelRate">
           <div class="text-subtitle2 ">Equivalencia paralela</div>
-          <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
+          <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
         </q-card-section>
       </q-card>
       <div v-if="!generalStore.loading && result !== null" class="result q-mt-md ">Resultado de la conversión: de {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
@@ -193,19 +193,29 @@ const updateResults = () => {
 //Initial assembly
 onMounted(async () => {
   await currencyStore.fetchCurrencies();
-  await exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value });
+  const promises = [
+    exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value })
+  ];
+
   if (showParallelRate.value) {
-    await exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value });
+    promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value })); // Añade la segunda llamada
   }
+
+  await Promise.all(promises); // Ejecuta ambas promesas en paralelo si corresponde
 });
 
 // Reactive observers
 watch([currencyFrom, currencyTo, date], async () => {
   if (currencyFrom.value && currencyTo.value && date.value) {
-    await exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value });
+    const promises = [
+      exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value })
+    ];
+
     if (showParallelRate.value) {
-      await exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value });
+      promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }));
     }
+
+    await Promise.all(promises); // Ejecuta ambas llamadas en paralelo si corresponde
   }
 });
 
@@ -221,9 +231,12 @@ const validateInput = (event) => {
 <style scoped>
 .my-card
 .result{
-  font-size: 15px;
+  font-size: 20px;
   font-weight: bold;
   font-family: DialogInput;
+  background: #83ffa2;
+  padding: 5px 0;
+  margin-top: 5px;
 }
 </style>
 

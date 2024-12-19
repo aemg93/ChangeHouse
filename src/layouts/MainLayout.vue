@@ -74,6 +74,12 @@ const linksList = [
     caption: '',
     icon: 'las la-cog',
     link: 'settings'
+  },
+  {
+    title: 'Acerca de',
+    caption: '',
+    icon: 'las la-cog',
+    link: 'about-us'
   }
 ]
 
