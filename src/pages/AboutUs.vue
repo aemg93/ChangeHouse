@@ -33,38 +33,36 @@
 <script setup>
 import { ref } from "vue";
 
-// Datos del equipo
 const team = ref([
   {
     name: "José R. Gutierrez",
-    role: "FullStack Senior",
-    image: "https://via.placeholder.com/150"
+    role: "Senior FullStack Developer",
+    image: new URL("./../assets/JoseG.jpg", import.meta.url)
   },
   {
     name: "Julio C. Uranga",
-    role: "Backend Junior",
-    image: "https://via.placeholder.com/150"
+    role: "Junior Backend Developer",
+    image: new URL("./../assets/JulioU.png", import.meta.url)
   },
   {
     name: "Ángel E. Moreno",
-    role: "FullStack Junior",
-    image: "https://via.placeholder.com/150"
+    role: "Junior FullStack Developer",
+    image: new URL("./../assets/AngelM.png", import.meta.url)
   }
 ]);
 
-// Datos de contacto
 const contact = ref({
   email: "josefo727@gmail.com",
   mobile: "+57 302 617 81 55",
-  website: "https://jose-gutierrez.com"
+  website: "https://jose-gutierrez.com/"
 });
 </script>
 
 <style scoped>
-/* Estilos generales */
 .about-page {
   text-align: center;
-  padding: 30px;
+  margin-top: -20px;
+  padding: 0 30px;
   font-family: Arial, sans-serif;
   color: #333;
 }
@@ -75,12 +73,12 @@ const contact = ref({
 }
 
 .subtitle {
-  font-size: 1.2rem;
+  font-size: 1rem;
+  margin-top: -10px;
   margin-bottom: 20px;
   color: #555;
 }
 
-/* Contenedor del equipo */
 .team-container {
   margin: 0 auto;
   max-width: 800px;
@@ -92,7 +90,6 @@ const contact = ref({
   gap: 20px;
 }
 
-/* Diseño flexbox para la tarjeta */
 .team-card {
   display: flex;
   align-items: center;
@@ -108,9 +105,8 @@ const contact = ref({
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* Imagen alineada a la izquierda */
 .team-image-container {
-  flex: 0 0 40%; /* Ocupa el 40% del ancho */
+  flex: 0 0 40%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -119,13 +115,12 @@ const contact = ref({
 .team-image {
   width: 120px;
   height: 120px;
-  border-radius: 50%; /* Imagen circular */
+  border-radius: 50%;
   object-fit: cover;
 }
 
-/* Texto alineado a la derecha */
 .team-text-container {
-  flex: 1; /* El texto ocupa el restante 60% */
+  flex: 1;
   text-align: left;
   padding-left: 20px;
 }
@@ -133,7 +128,7 @@ const contact = ref({
 .team-name {
   font-size: 1.2rem;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 0;
 }
 
 .team-role {
@@ -141,15 +136,15 @@ const contact = ref({
   color: #777;
 }
 
-/* Contenedor de contacto */
 .contact-container {
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .note {
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: #555;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+  font-weight: 700;
 }
 
 .contact-info {
