@@ -76,6 +76,12 @@ const linksList = [
     link: 'settings'
   },
   {
+    title: 'Descargo de Responsabilidad',
+    caption: '',
+    icon: 'las la-exclamation-triangle',
+    link: 'disclaimer'
+  },
+  {
     title: 'Acerca de',
     caption: '',
     icon: 'las la-info-circle',
