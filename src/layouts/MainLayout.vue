@@ -15,14 +15,6 @@
         <q-toolbar-title>
           {{ appName }}
         </q-toolbar-title>
-        <q-btn
-          flat
-          dense
-          icon="las la-share-alt"
-          aria-label="Compartir la tasa de cambio"
-          @click="shareContent"
-          class="text-white"
-        />
       </q-toolbar>
     </q-header>
 
@@ -90,30 +82,11 @@ const linksList = [
 ]
 
 const leftDrawerOpen = ref(false)
-const route = useRoute()
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-function shareContent() {
-  const currentPageName = route.name || 'Página Actual';
-  const currentPageUrl = window.location.href;
-
-  if (navigator.share) {
-    navigator.share({
-      title: `Compartiendo: ${currentPageName}`,
-      text: `Echa un vistazo a esta página: ${currentPageName}`,
-      url: currentPageUrl
-    }).then(() => {
-      console.log('Contenido compartido exitosamente');
-    }).catch((error) => {
-      console.error('Error al compartir:', error);
-    });
-  } else {
-    alert('La función de compartir no está disponible en este navegador.');
-  }
-}
 </script>
 
 <style scoped>
