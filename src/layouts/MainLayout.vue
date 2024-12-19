@@ -78,7 +78,7 @@ const linksList = [
   {
     title: 'Acerca de',
     caption: '',
-    icon: 'las la-cog',
+    icon: 'las la-info-circle',
     link: 'about-us'
   }
 ]
