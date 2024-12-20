@@ -105,7 +105,7 @@
   </q-page>
 </template>
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onActivated, watch } from 'vue';
 import { useCurrencyStore } from '@/stores/currency-store';
 import { useExchangeRateStore } from '@/stores/exchange-rate-store';
 import { useGeneralStore } from '@/stores/general-store';
@@ -201,22 +201,37 @@ const updateResults = () => {
   parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate).toFixed(4)) : 0;
 };
 
+const refreshResults = async () => {
+  if (currencyFrom.value && currencyTo.value && date.value) {
+    const promises = [
+      exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value })
+    ];
+
+    if (showParallelRate.value) {
+      promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }));
+    }
+
+    await Promise.all(promises);
+    updateResults();
+  }
+};
+
+onActivated(async () => {
+  await refreshResults();
+});
+
 onMounted(async () => {
   if (generalStore.getInitialLoad) {
-    // Carga inicial: intenta cargar `currencyFrom` y `currencyTo` desde el localStorage, si no, usa valores por defecto
     const storedFrom = localStorage.getItem('currencyFrom') || 'USD';
     const storedTo = localStorage.getItem('currencyTo') || 'VES';
 
     currencyFrom.value = storedFrom;
     currencyTo.value = storedTo;
 
-    // Sobreescribe las monedas auxiliares (variables auxiliares)
     generalStore.updateCurrentCurrencies(currencyFrom.value, currencyTo.value);
 
-    // Marcar como cargado inicial
     generalStore.setInitialLoad(false);
   } else {
-    // Si no es la carga inicial, toma los valores actuales de las monedas auxiliares
     const currentFrom = localStorage.getItem('currentCurrencyFrom') || 'USD';
     const currentTo = localStorage.getItem('currentCurrencyTo') || 'VES';
 
@@ -224,7 +239,6 @@ onMounted(async () => {
     currencyTo.value = currentTo;
   }
 
-  // Realiza la carga de monedas y tasas
   await currencyStore.fetchCurrencies();
   const promises = [
     exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value })
@@ -235,6 +249,7 @@ onMounted(async () => {
   }
 
   await Promise.all(promises);
+  await refreshResults();
 });
 
 watch([currencyFrom, currencyTo, date], async () => {
