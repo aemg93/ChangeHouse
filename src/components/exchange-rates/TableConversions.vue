@@ -33,51 +33,19 @@
 
         <AmountInput v-model="amount" />
 
-        <q-select
+        <CurrencySelect
           v-model="currencyFrom"
           :options="filteredOptionsFrom"
-          use-input
-          input-debounce="0"
-          class="select q-mt-sm "
-          filled
           label="Moneda de origen"
-          emit-value
-          map-options
-          dropdown-icon="las la-angle-down"
-          input-class=""
-          @filter="filterFrom"
-        >
-          <template v-slot:no-option>
-            <q-item>
-              <q-item-section>
-                No hay resultados disponibles
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
+          :filter-handler="filterFrom"
+        />
 
-        <q-select
+        <CurrencySelect
           v-model="currencyTo"
           :options="filteredOptionsTo"
-          use-input
-          input-debounce="0"
-          class="select q-mt-sm "
-          filled
           label="Moneda destino"
-          emit-value
-          map-options
-          dropdown-icon="fas las la-angle-down"
-          input-class=""
-          @filter="filterTo"
-        >
-          <template v-slot:no-option>
-            <q-item>
-              <q-item-section>
-                No hay resultados disponibles
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
+          :filter-handler="filterTo"
+        />
       </div>
 
       <div class="q-mt-md q-mb-md result">
@@ -112,6 +80,7 @@ import { useGeneralStore } from '@/stores/general-store';
 import { currencyFormat } from "@/helpers/currency-utils";
 import { getTodayForCalendar } from '@/helpers/date-utils';
 import AmountInput from '@/components/exchange-rates/AmountInput.vue';
+import CurrencySelect from '@/components/CurrencySelect.vue';
 
 // Initial status
 const amount = ref(1);

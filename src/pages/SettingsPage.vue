@@ -5,43 +5,21 @@
 
       <p class="description q-mt-md">Configura tus monedas iniciales para la conversión.</p>
 
-      <q-select
+      <CurrencySelect
         v-model="currencyFrom"
         :options="filteredOptionsFrom"
-        filled
         label="Moneda de origen"
-        emit-value
-        map-options
-        use-input
-        @filter="filterFrom"
-        class="q-mt-md"
         :rules="[validateCurrencies]"
-      >
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section>No hay resultados disponibles</q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+        :filter-handler="filterFrom"
+      />
 
-      <q-select
+      <CurrencySelect
         v-model="currencyTo"
         :options="filteredOptionsTo"
-        filled
         label="Moneda de destino"
-        emit-value
-        map-options
-        use-input
-        @filter="filterTo"
-        class="q-mt-md"
         :rules="[validateCurrencies]"
-      >
-        <template v-slot:no-option>
-          <q-item>
-            <q-item-section>No hay resultados disponibles</q-item-section>
-          </q-item>
-        </template>
-      </q-select>
+        :filter-handler="filterTo"
+      />
 
       <q-btn
         label="Guardar configuración"
@@ -60,6 +38,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useCurrencyStore } from '@/stores/currency-store';
+import CurrencySelect from '@/components/CurrencySelect.vue';
 
 const currencyStore = useCurrencyStore();
 
