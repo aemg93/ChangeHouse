@@ -42,7 +42,7 @@ const team = ref([
   {
     name: "Julio C. Uranga",
     role: "Junior Backend Developer",
-    image: new URL("./../assets/JulioU.png", import.meta.url)
+    image: new URL("./../assets/JulioU.jpg", import.meta.url)
   },
   {
     name: "Ángel E. Moreno",
@@ -68,8 +68,8 @@ const contact = ref({
 }
 
 .title {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
+  font-size: 2rem;
+  margin-bottom: 0;
 }
 
 .subtitle {
