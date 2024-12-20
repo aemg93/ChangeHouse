@@ -84,9 +84,7 @@ async function fetchCurrencies() {
     generalStore.loading = true;
 
     const token = await getToken();
-    if (!token) {
-      throw new Error('No token available');
-    }
+    validateToken(token);
 
     return fetchCachedData(
       CURRENCIES_STORAGE_KEY,
@@ -113,9 +111,7 @@ async function fetchExchangeRate(source, target, date) {
     generalStore.loading = true;
 
     const token = await getToken();
-    if (!token) {
-      throw new Error('No token available');
-    }
+    validateToken(token);
     const normalizedDate = normalizeDate(date);
     const cacheKey = `exchange_rate_${source}_${target}_${normalizedDate}`;
     const isToday = normalizedDate === new Date().toISOString().split('T')[0].replaceAll('-', '/');
@@ -153,9 +149,7 @@ async function fetchParallelRate(source, target, date) {
     generalStore.loading = true;
 
     const token = await getToken();
-    if (!token) {
-      throw new Error('No token available');
-    }
+    validateToken(token);
     const normalizedDate = normalizeDate(date);
     const cacheKey = `parallel_rate_${source}_${target}_${normalizedDate}`;
     const isToday = normalizedDate === new Date().toISOString().split('T')[0].replaceAll('-', '/');
@@ -184,6 +178,15 @@ async function fetchParallelRate(source, target, date) {
     return null;
   } finally {
     generalStore.loading = false;
+  }
+}
+
+/**
+ * Utility function to validate token availability.
+ */
+function validateToken(token) {
+  if (!token) {
+    throw new Error('No token available');
   }
 }
 
