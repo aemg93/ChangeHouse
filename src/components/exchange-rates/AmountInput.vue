@@ -69,7 +69,7 @@ const checkEmptyValue = () => {
 const appliedRules = ref([
   (val) => {
     if (!isFocused.value) {
-      return parseFloat(val) >= 0.01 || "El monto debe ser mayor o igual a 0.01";
+      return parseFloat(val) > 0 || "El monto debe ser mayor a 0";
     }
     return true;
   },
