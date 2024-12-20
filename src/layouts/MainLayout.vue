@@ -68,18 +68,24 @@ const linksList = [
     link: 'settings'
   },
   {
-    title: 'Descargo de Responsabilidad',
+    title: 'Nuestros Servicios',
     caption: '',
-    icon: 'las la-exclamation-triangle',
-    link: 'disclaimer'
+    icon: 'las la-laptop-code',
+    link: 'services'
   },
   {
     title: 'Acerca de',
     caption: '',
     icon: 'las la-info-circle',
     link: 'about-us'
-  }
-]
+  },
+  {
+    title: 'Descargo de Responsabilidad',
+    caption: '',
+    icon: 'las la-exclamation-triangle',
+    link: 'disclaimer'
+  },
+];
 
 const leftDrawerOpen = ref(false)
 
