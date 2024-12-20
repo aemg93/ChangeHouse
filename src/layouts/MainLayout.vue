@@ -15,6 +15,9 @@
         <q-toolbar-title>
           {{ appName }}
         </q-toolbar-title>
+        <template v-if="$route.name === 'index'">
+          <CaptureShareComponent />
+        </template>
       </q-toolbar>
     </q-header>
 
@@ -45,8 +48,8 @@
 
 <script setup>
 import { ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
-import { useRoute } from 'vue-router'
+import EssentialLink from 'components/EssentialLink.vue';
+import CaptureShareComponent from '@/components/CaptureShareComponent.vue';
 
 defineOptions({
   name: 'MainLayout'
