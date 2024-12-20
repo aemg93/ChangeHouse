@@ -23,7 +23,7 @@ export default {
             const imageDataUrl = res.URI;
 
             window.plugins.socialsharing.share(
-              `Aquí tienes una cotización de divisas obtenida a través de ${appName}`,
+              `Aquí tienes una cotización de divisas obtenida a través de la app ${appName}`,
               'Captura de pantalla',
               imageDataUrl,
               null
