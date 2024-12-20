@@ -1,8 +1,8 @@
 <template>
   <q-page>
-    <div class="q-mt-xl q-mx-auto text-center" style="max-width: 70%; width: 100%;">
-      <div class="text-center q-mb-md">
-        <img src="@/assets/logoDivisas.svg" alt="Equivalencia de Divisas" />
+    <div class="q-mt-md q-mx-auto text-center" style="max-width: 70%; width: 100%;">
+      <div class="text-center q-mb-md q-mt-lg">
+        <img src="@/assets/logo.svg" alt="Equivalencia de Divisas" />
         <h6 class="q-ma-none">Equivalencia de Divisas</h6>
       </div>
       <TableConversions />
