@@ -20,8 +20,7 @@ export default {
               message: 'Error al capturar la pantalla: ' + error,
             });
           } else {
-            const imageDataUrl = res.URI; // DataURL en formato base64
-            console.log('Captura en memoria generada:', imageDataUrl);
+            const imageDataUrl = res.URI;
 
             window.plugins.socialsharing.share(
               `Aquí tienes una cotización de divisas obtenida a través de ${appName}`,
