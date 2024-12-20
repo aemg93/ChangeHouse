@@ -9,6 +9,9 @@
           mask="date"
           :rules="['date']"
           input-class=""
+          class="q-mb-md"
+          hint="Disponible desde el 01 de enero de 2000"
+          persistent-hint
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -31,6 +34,10 @@
         <q-input
           filled
           v-model.number="amount"
+          type="number"
+          min="1"
+          :rules="[val => val >= 0.01 || 'El monto debe ser mayor o igual a 0.01']"
+          class="q-mt-sm"
           label="Monto"
           fill-mask="0"
           reverse-fill-mask
