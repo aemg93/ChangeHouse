@@ -31,19 +31,7 @@
           </template>
         </q-input>
 
-        <q-input
-          filled
-          v-model.number="amount"
-          type="number"
-          min="1"
-          :rules="[val => val >= 0.01 || 'El monto debe ser mayor o igual a 0.01']"
-          class="q-mt-sm"
-          label="Monto"
-          fill-mask="0"
-          reverse-fill-mask
-          input-class="text-right "
-          @input="validateInput"
-        />
+        <AmountInput v-model="amount" />
 
         <q-select
           v-model="currencyFrom"
@@ -97,17 +85,15 @@
         <div v-if="generalStore.error" class="error ">{{ generalStore.error }}</div>
       </div>
 
-      <q-card dark bordered class="bg-positive text-dark my-card">
+      <q-card dark bordered class="bg-positive text-dark my-card q-pt-md">
         <q-card-section class="show-result">
           <div class="text-subtitle2" v-if="showParallelRate">Tasa oficial</div>
           <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
-        <q-separator dark inset v-if="showParallelRate" />
         <q-card-section class="show-result" v-if="showParallelRate">
           <div class="text-subtitle2">Tasa paralela</div>
           <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
         </q-card-section>
-        <q-separator dark inset v-if="showParallelRate" />
         <q-card-section class="show-result" v-if="showParallelRate && averageRate !== null">
           <div class="text-subtitle2">Tasa promedio</div>
           <div class="result q-mb-sm">{{ `${currencyFormat(averageRate, currencyTo)}` }}</div>
@@ -125,6 +111,7 @@ import { useExchangeRateStore } from '@/stores/exchange-rate-store';
 import { useGeneralStore } from '@/stores/general-store';
 import { currencyFormat } from "@/helpers/currency-utils";
 import { getTodayForCalendar } from '@/helpers/date-utils';
+import AmountInput from '@/components/exchange-rates/AmountInput.vue';
 
 // Initial status
 const amount = ref(1);
@@ -279,6 +266,9 @@ const validateInput = (event) => {
 <style scoped>
 .show-result {
   margin: -10px 10px;
+}
+.text-subtitle2 {
+  margin-top: -12px;
 }
 .my-card .result {
   font-size: 20px;
