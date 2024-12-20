@@ -40,7 +40,7 @@ watch(
 
 const clearTemporaryValue = () => {
   isFocused.value = true;
-  temporaryValue.value = ""; // Dejar el input vacío para que sea más fácil escribir
+  temporaryValue.value = "";
 };
 
 watch(
