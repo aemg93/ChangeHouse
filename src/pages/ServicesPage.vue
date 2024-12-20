@@ -61,7 +61,6 @@ const contact = ref({
 
 .services-container {
   margin: 0 auto;
-  max-width: 800px;
 }
 
 .services-list {
