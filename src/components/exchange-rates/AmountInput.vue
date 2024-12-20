@@ -7,6 +7,7 @@
     class="input-amount q-mt-sm"
     input-class="text-right"
     label="Monto"
+    :input-style="{ fontSize: '1.2rem' }"
     @focus="clearTemporaryValue"
     @blur="checkEmptyValue"
   />
