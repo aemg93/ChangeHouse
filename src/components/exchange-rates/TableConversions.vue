@@ -256,13 +256,8 @@ watch([currencyFrom, currencyTo], ([newFrom, newTo]) => {
 });
 
 watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], updateResults);
-
-const validateInput = (event) => {
-  const value = event.target.value;
-  const sanitizedInput = value.replace(/[^0-9.]/g, '');
-  amount.value = sanitizedInput ? parseFloat(sanitizedInput) : 0;
-};
 </script>
+
 <style scoped>
 .show-result {
   margin: -10px 10px;
@@ -273,10 +268,15 @@ const validateInput = (event) => {
 .my-card .result {
   font-size: 20px;
   font-weight: bold;
-  font-family: DialogInput;
+  font-family: DialogInput, serif;
   background: #83ffa2;
   padding: 5px 0;
   margin-top: 5px;
 }
 </style>
 
+<style>
+.q-field__native:has(input[aria-expanded="true"]) span {
+  display: none !important;
+}
+</style>
