@@ -2,10 +2,9 @@
   <q-input
     filled
     type="number"
-    :min="0.01"
     v-model="temporaryValue"
     :rules="appliedRules"
-    class="q-mt-sm"
+    class="input-amount q-mt-sm"
     input-class="text-right"
     label="Monto"
     @focus="clearTemporaryValue"
@@ -75,3 +74,9 @@ const appliedRules = ref([
   },
 ]);
 </script>
+
+<style scoped>
+.input-amount {
+  margin-bottom: -10px;
+}
+</style>
