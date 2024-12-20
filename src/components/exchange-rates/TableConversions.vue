@@ -12,6 +12,8 @@
           class="q-mb-md"
           hint="Disponible desde el 01 de enero de 2000"
           persistent-hint
+          label="Fecha"
+          :input-style="{ fontSize: '1.2rem' }"
         >
           <template v-slot:append>
             <q-icon name="event" class="cursor-pointer">
@@ -48,8 +50,8 @@
         />
       </div>
 
-      <div class="q-mt-md q-mb-md result">
-        <div v-if="!generalStore.loading && result !== null" class="result ">{{ `${currencyFormat(amount, currencyFrom)}` }} equivale a</div>
+      <div class="q-mt-md q-mb-md result-label">
+        <div v-if="!generalStore.loading && result !== null">{{ `${currencyFormat(amount, currencyFrom)}` }} equivale a</div>
         <div v-if="generalStore.error" class="error ">{{ generalStore.error }}</div>
       </div>
 
@@ -243,6 +245,13 @@ watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.
 </script>
 
 <style scoped>
+.container {
+  margin: 0 -30px;
+}
+.result-label {
+  font-size: 1rem;
+  margin: 8px 5px 5px;
+}
 .show-result {
   margin: -10px 10px;
 }
