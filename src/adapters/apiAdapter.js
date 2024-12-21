@@ -114,7 +114,7 @@ async function fetchExchangeRate(source, target, date) {
     validateToken(token);
     const normalizedDate = normalizeDate(date);
     const cacheKey = `exchange_rate_${source}_${target}_${normalizedDate}`;
-    const isToday = normalizedDate === new Date().toISOString().split('T')[0].replaceAll('-', '/');
+    const isToday = normalizedDate === new Date().toLocaleDateString('en-CA').split('T')[0].replaceAll('-', '/');
 
     return fetchCachedData(
       cacheKey,
@@ -152,7 +152,7 @@ async function fetchParallelRate(source, target, date) {
     validateToken(token);
     const normalizedDate = normalizeDate(date);
     const cacheKey = `parallel_rate_${source}_${target}_${normalizedDate}`;
-    const isToday = normalizedDate === new Date().toISOString().split('T')[0].replaceAll('-', '/');
+    const isToday = normalizedDate === new Date().toLocaleDateString('en-CA').split('T')[0].replaceAll('-', '/');
 
     return fetchCachedData(
       cacheKey,
