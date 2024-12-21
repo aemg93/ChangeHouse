@@ -40,7 +40,7 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container class="">
+    <q-page-container class="page-container">
       <router-view />
     </q-page-container>
   </q-layout>
@@ -99,6 +99,9 @@ function toggleLeftDrawer() {
 </script>
 
 <style scoped>
+.page-container {
+  background: #F8F9FA;
+}
 .active-link {
   background-color: #080808 !important;
   color: #ffffff !important;
