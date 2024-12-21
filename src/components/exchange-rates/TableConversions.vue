@@ -24,7 +24,7 @@
                     <q-date
                       v-model="date"
                       @update:model-value="dateProxy.hide()"
-                      :options="disableFutureDates"
+                      :options="disableDates"
                       :locale="locale"
                     >
                       <div class="row items-center justify-end">
@@ -75,7 +75,7 @@
 
       <q-card dark bordered class="bg-positive text-dark my-card q-pt-md">
         <q-card-section class="show-result">
-          <div class="text-subtitle2" v-if="showParallelRate">Tasa oficial {{ showParallelRate ? 'BCV' : ''}}</div>
+          <div class="text-subtitle2">Tasa {{ showParallelRate ? 'oficial BCV' : 'de Cambio'}}</div>
           <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
         <q-card-section class="show-result" v-if="showParallelRate">
@@ -84,8 +84,9 @@
         </q-card-section>
         <q-card-section class="show-result" v-if="showParallelRate && averageRate !== null">
           <div class="text-subtitle2">Tasa promedio</div>
-          <div class="result q-mb-sm">{{ `${currencyFormat(averageRate, currencyTo)}` }}</div>
+          <div class="result">{{ `${currencyFormat(averageRate, currencyTo)}` }}</div>
         </q-card-section>
+        <div class="q-mb-sm"></div>
       </q-card>
       <div v-if="!generalStore.loading && result !== null" class="result q-mt-md">
         Resultado de la conversión: de {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}
@@ -101,7 +102,7 @@ import { useCurrencyStore } from '@/stores/currency-store';
 import { useExchangeRateStore } from '@/stores/exchange-rate-store';
 import { useGeneralStore } from '@/stores/general-store';
 import { currencyFormat } from '@/helpers/currency-utils';
-import { getTodayForCalendar } from '@/helpers/date-utils';
+import { getTodayForCalendar, getMinDateForCalendar } from '@/helpers/date-utils';
 import AmountInput from '@/components/exchange-rates/AmountInput.vue';
 import CurrencySelect from '@/components/CurrencySelect.vue';
 import { useQuasar } from 'quasar';
@@ -138,7 +139,11 @@ const openCalendar = () => {
   dateProxy.value.show();
 };
 
-const disableFutureDates = (inputDate) => inputDate <= getTodayForCalendar();
+const disableDates = (inputDate) => {
+  const minDate = getMinDateForCalendar();
+  const maxDate = getTodayForCalendar();
+  return inputDate > minDate && inputDate < maxDate;
+};
 
 const options = computed(() =>
   currencyStore.getCurrencies.map(currency => ({
