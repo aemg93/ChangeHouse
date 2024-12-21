@@ -43,7 +43,11 @@
               color="primary"
               class="refresh-btn q-ml-sm"
               @click="refreshResults"
-            />
+            >
+              <q-tooltip :hide-delay="700" class="bg-primary text-white">
+                Refrescando
+              </q-tooltip>
+            </q-btn>
           </div>
         </div>
 
@@ -100,6 +104,7 @@ import { currencyFormat } from '@/helpers/currency-utils';
 import { getTodayForCalendar } from '@/helpers/date-utils';
 import AmountInput from '@/components/exchange-rates/AmountInput.vue';
 import CurrencySelect from '@/components/CurrencySelect.vue';
+import { useQuasar } from 'quasar';
 
 // Initial status
 const amount = ref(1);
@@ -117,6 +122,7 @@ const isInitialized = ref(false);
 const currencyStore = useCurrencyStore();
 const exchangeRateStore = useExchangeRateStore();
 const generalStore = useGeneralStore();
+const $q = useQuasar();
 
 const locale = ref({
   days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
@@ -246,6 +252,21 @@ const debouncedUpdateResults = debounce(updateResults, 300);
 
 watch([currencyFrom, currencyTo, date], refreshResults);
 watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], debouncedUpdateResults);
+watch(
+  () => generalStore.error,
+  (newError) => {
+    if (newError && typeof newError === 'string') {
+      $q.notify({
+        type: 'negative',
+        message: newError,
+        position: 'center',
+        timeout: 5000,
+      });
+
+      generalStore.error = '';
+    }
+  }
+);
 </script>
 
 <style scoped>
