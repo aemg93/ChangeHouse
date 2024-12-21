@@ -10,7 +10,13 @@ const getTodayForCalendar = () => {
   return date.formatDate(timeStamp, 'YYYY/MM/DD')
 }
 
+const getMinDateForCalendar = () => {
+  const minDateTimeStamp = new Date('2000-01-01').getTime();
+  return date.formatDate(minDateTimeStamp, 'YYYY/MM/DD');
+};
+
 export {
   getToday,
-  getTodayForCalendar
+  getTodayForCalendar,
+  getMinDateForCalendar
 };
