@@ -63,10 +63,10 @@ const handleFilter = (val, update) => {
 };
 
 const handleSelect = () => {
-  const el = document.activeElement;
-  if (el) {
-    el.blur();
-  }
+  setTimeout(() => {
+    const el = document.activeElement;
+    el && el.blur();
+  }, 100);
 };
 
 </script>
