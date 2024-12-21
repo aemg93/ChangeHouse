@@ -11,6 +11,7 @@
     :rules="rules"
     class="select"
     @filter="handleFilter"
+    @update:model-value="handleSelect"
   >
     <template v-slot:no-option>
       <q-item>
@@ -60,6 +61,14 @@ const handleFilter = (val, update) => {
     update();
   }
 };
+
+const handleSelect = () => {
+  const el = document.activeElement;
+  if (el) {
+    el.blur();
+  }
+};
+
 </script>
 
 <style scoped>
