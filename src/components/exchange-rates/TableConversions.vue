@@ -2,36 +2,50 @@
   <q-page>
     <div class="container">
       <div style="max-width: 100%">
-
-        <q-input
-          filled
-          v-model="date"
-          mask="date"
-          :rules="['date']"
-          input-class=""
-          class="q-mb-md"
-          hint="Disponible desde el 01 de enero de 2000"
-          persistent-hint
-          label="Fecha"
-          :input-style="{ fontSize: '1.2rem' }"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="dateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date
-                  v-model="date"
-                  @update:model-value="dateProxy.hide()"
-                  :options="disableFutureDates"
-                  :locale="locale"
-                >
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Cerrar" color="primary" flat></q-btn>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+        <div class="row items-center justify-between">
+          <div class="col">
+            <q-input
+              filled
+              v-model="date"
+              mask="date"
+              :rules="['date']"
+              input-class=""
+              class="q-mb-md"
+              hint="Disponible desde el 01 de enero de 2000"
+              persistent-hint
+              label="Fecha"
+              :input-style="{ fontSize: '1.2rem' }"
+              readonly
+              @click="openCalendar"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy ref="dateProxy" cover transition-show="scale" transition-hide="scale">
+                    <q-date
+                      v-model="date"
+                      @update:model-value="dateProxy.hide()"
+                      :options="disableFutureDates"
+                      :locale="locale"
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Cerrar" color="primary" flat></q-btn>
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col-refresh-btn">
+            <q-btn
+              flat
+              icon="refresh"
+              color="primary"
+              class="refresh-btn q-ml-sm"
+              @click="refreshResults"
+            />
+          </div>
+        </div>
 
         <AmountInput v-model="amount" />
 
@@ -52,34 +66,37 @@
 
       <div class="q-mt-md q-mb-md result-label">
         <div v-if="!generalStore.loading && result !== null">{{ `${currencyFormat(amount, currencyFrom)}` }} equivale a</div>
-        <div v-if="generalStore.error" class="error ">{{ generalStore.error }}</div>
+        <div v-if="generalStore.error" class="error">{{ generalStore.error }}</div>
       </div>
 
       <q-card dark bordered class="bg-positive text-dark my-card q-pt-md">
         <q-card-section class="show-result">
-          <div class="text-subtitle2" v-if="showParallelRate">Tasa oficial</div>
+          <div class="text-subtitle2" v-if="showParallelRate">Tasa oficial {{ showParallelRate ? 'BCV' : ''}}</div>
           <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
         <q-card-section class="show-result" v-if="showParallelRate">
           <div class="text-subtitle2">Tasa paralela</div>
-          <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
+          <div v-if="!generalStore.loading && parallelResult !== null" class="result">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
         </q-card-section>
         <q-card-section class="show-result" v-if="showParallelRate && averageRate !== null">
           <div class="text-subtitle2">Tasa promedio</div>
           <div class="result q-mb-sm">{{ `${currencyFormat(averageRate, currencyTo)}` }}</div>
         </q-card-section>
       </q-card>
-      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md ">Resultado de la conversión: de {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
-
+      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md">
+        Resultado de la conversión: de {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}
+      </div>
     </div>
   </q-page>
 </template>
+
 <script setup>
 import { ref, computed, onMounted, onActivated, watch } from 'vue';
+import { debounce } from 'lodash';
 import { useCurrencyStore } from '@/stores/currency-store';
 import { useExchangeRateStore } from '@/stores/exchange-rate-store';
 import { useGeneralStore } from '@/stores/general-store';
-import { currencyFormat } from "@/helpers/currency-utils";
+import { currencyFormat } from '@/helpers/currency-utils';
 import { getTodayForCalendar } from '@/helpers/date-utils';
 import AmountInput from '@/components/exchange-rates/AmountInput.vue';
 import CurrencySelect from '@/components/CurrencySelect.vue';
@@ -92,11 +109,15 @@ const result = ref(0);
 const parallelResult = ref(0);
 const date = ref(getTodayForCalendar());
 const dateProxy = ref(null);
+
 const searchFrom = ref('');
 const searchTo = ref('');
+const isInitialized = ref(false);
+
 const currencyStore = useCurrencyStore();
 const exchangeRateStore = useExchangeRateStore();
 const generalStore = useGeneralStore();
+
 const locale = ref({
   days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
   daysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
@@ -107,29 +128,20 @@ const locale = ref({
   pluralDay: 'dias',
 });
 
-const disableFutureDates = (inputDate) => inputDate <= getTodayForCalendar();
+const openCalendar = () => {
+  dateProxy.value.show();
+};
 
-const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const disableFutureDates = (inputDate) => inputDate <= getTodayForCalendar();
 
 const options = computed(() =>
   currencyStore.getCurrencies.map(currency => ({
     label: currency.name,
-    value: currency.code
+    value: currency.code,
   }))
 );
 
-const showParallelRate = computed(() => currencyFrom.value === 'VES' || currencyTo.value === 'VES');
-
-const averageRate = computed(() => {
-  const rate = result.value;
-  const parallelRate = parallelResult.value;
-
-  if (rate !== null && !isNaN(rate) && parallelRate !== null && !isNaN(parallelRate)) {
-    return (rate + parallelRate) / 2;
-  }
-
-  return null;
-});
+const removeAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 const filteredOptionsFrom = computed(() => {
   return options.value.filter(option => {
@@ -145,6 +157,15 @@ const filteredOptionsTo = computed(() => {
     const search = removeAccents(searchTo.value.toLowerCase());
     return option.value !== currencyFrom.value && label.includes(search);
   });
+});
+
+const showParallelRate = computed(() => currencyFrom.value === 'VES' || currencyTo.value === 'VES');
+
+const averageRate = computed(() => {
+  if (result.value && parallelResult.value) {
+    return (result.value + parallelResult.value) / 2;
+  }
+  return null;
 });
 
 const getCurrencyProperty = (currencyCode, property) => {
@@ -168,80 +189,63 @@ const filterTo = (val, update) => {
 const updateResults = () => {
   const rate = exchangeRateStore.getExchangeRate;
   const parallelRate = exchangeRateStore.getParallelRate;
+
   result.value = amount.value && rate ? parseFloat((amount.value * rate).toFixed(4)) : 0;
   parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate).toFixed(4)) : 0;
 };
 
 const refreshResults = async () => {
-  if (currencyFrom.value && currencyTo.value && date.value) {
-    const promises = [
-      exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value })
-    ];
+  generalStore.loading = true;
+  try {
+    if (currencyFrom.value && currencyTo.value && date.value) {
+      const promises = [
+        exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }),
+      ];
 
-    if (showParallelRate.value) {
-      promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }));
+      if (showParallelRate.value) {
+        promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }));
+      }
+      await Promise.all(promises);
+      updateResults();
     }
-
-    await Promise.all(promises);
-    updateResults();
+  } catch (error) {
+    generalStore.error = 'No se pudieron obtener los datos. Por favor, inténtalo más tarde.';
+  } finally {
+    generalStore.loading = false;
   }
 };
 
-onActivated(async () => {
-  await refreshResults();
-});
-
-onMounted(async () => {
+const initializeData = async () => {
   if (generalStore.getInitialLoad) {
     const storedFrom = localStorage.getItem('currencyFrom') || 'USD';
     const storedTo = localStorage.getItem('currencyTo') || 'VES';
-
     currencyFrom.value = storedFrom;
     currencyTo.value = storedTo;
-
     generalStore.updateCurrentCurrencies(currencyFrom.value, currencyTo.value);
-
     generalStore.setInitialLoad(false);
-  } else {
-    const currentFrom = localStorage.getItem('currentCurrencyFrom') || 'USD';
-    const currentTo = localStorage.getItem('currentCurrencyTo') || 'VES';
-
-    currencyFrom.value = currentFrom;
-    currencyTo.value = currentTo;
   }
-
   await currencyStore.fetchCurrencies();
-  const promises = [
-    exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value })
-  ];
-
-  if (showParallelRate.value) {
-    promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value }));
-  }
-
-  await Promise.all(promises);
   await refreshResults();
-});
+};
 
-watch([currencyFrom, currencyTo, date], async () => {
-  if (currencyFrom.value && currencyTo.value && date.value) {
-    const promises = [
-      exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value })
-    ];
-
-    if (showParallelRate.value) {
-      promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }));
-    }
-
-    await Promise.all(promises);
+onMounted(async () => {
+  if (!isInitialized.value) {
+    await initializeData();
+    isInitialized.value = true;
   }
 });
 
-watch([currencyFrom, currencyTo], ([newFrom, newTo]) => {
-  generalStore.updateCurrentCurrencies(newFrom, newTo);
+onActivated(async () => {
+  if (!isInitialized.value) {
+    await initializeData();
+    isInitialized.value = true;
+  }
 });
 
-watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], updateResults);
+const debouncedUpdateResults = debounce(updateResults, 300);
+
+watch([currencyFrom, currencyTo, date], refreshResults);
+watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], debouncedUpdateResults);
 </script>
 
 <style scoped>
@@ -266,10 +270,25 @@ watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.
   padding: 5px 0;
   margin-top: 5px;
 }
+.col-refresh-btn {
+  min-width: 60px !important;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -34px;
+}
+.refresh-btn {
+  height: 56px;
+  background-color: #4A90E2;
+  color: #FFFFFF !important;
+}
 </style>
 
 <style>
 .q-field__native:has(input[aria-expanded="true"]) span {
   display: none !important;
+}
+.q-field__control:before,
+.q-field__control:after {
+  content: unset !important;
 }
 </style>
