@@ -142,7 +142,7 @@ const openCalendar = () => {
 const disableDates = (inputDate) => {
   const minDate = getMinDateForCalendar();
   const maxDate = getTodayForCalendar();
-  return inputDate > minDate && inputDate < maxDate;
+  return inputDate >= minDate && inputDate <= maxDate;
 };
 
 const options = computed(() =>
@@ -253,7 +253,7 @@ onActivated(async () => {
   }
 });
 
-const debouncedUpdateResults = debounce(updateResults, 300);
+const debouncedUpdateResults = debounce(updateResults, 200);
 
 watch([currencyFrom, currencyTo, date], refreshResults);
 watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], debouncedUpdateResults);
