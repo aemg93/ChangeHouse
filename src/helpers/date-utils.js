@@ -15,8 +15,19 @@ const getMinDateForCalendar = () => {
   return date.formatDate(minDateTimeStamp, 'YYYY/MM/DD');
 };
 
+const normalizeDate = date => {
+  return date.replaceAll('-', '/');
+}
+
+const isToday = date => {
+  const today = new Date().toLocaleDateString('en-CA').replaceAll('-', '/');
+  return normalizeDate(date) === today;
+}
+
 export {
   getToday,
   getTodayForCalendar,
-  getMinDateForCalendar
+  getMinDateForCalendar,
+  normalizeDate,
+  isToday
 };
