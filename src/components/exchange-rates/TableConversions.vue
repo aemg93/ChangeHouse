@@ -98,7 +98,6 @@
 
       <div class="q-mt-md q-mb-md result-label">
         <div v-if="!generalStore.loading && result !== null">{{ `${currencyFormat(amount, currencyFrom)}` }} equivale a</div>
-        <div v-if="generalStore.error" class="error">{{ generalStore.error }}</div>
       </div>
 
       <q-card dark bordered class="bg-positive text-dark my-card q-pt-md">
@@ -229,11 +228,13 @@ const updateResults = () => {
   const rate = exchangeRateStore.getExchangeRate;
   const parallelRate = exchangeRateStore.getParallelRate;
 
-  result.value = amount.value && rate ? parseFloat((amount.value * rate).toFixed(4)) : 0;
-  parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate).toFixed(4)) : 0;
+  result.value = amount.value && rate ? parseFloat((amount.value * rate)) : 0;
+  parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate)) : 0;
 };
 
 const refreshResults = async () => {
+  result.value = 0;
+  parallelResult.value = 0;
   generalStore.loading = true;
   try {
     if (currencyFrom.value && currencyTo.value && date.value) {
@@ -311,7 +312,7 @@ watch(
         timeout: 5000,
       });
 
-      generalStore.error = '';
+      setTimeout(() => generalStore.error = '',5000);
     }
   }
 );
