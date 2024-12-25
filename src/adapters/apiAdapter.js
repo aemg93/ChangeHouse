@@ -1,5 +1,8 @@
-import { api } from 'boot/axios';
-import { useGeneralStore } from '@/stores/general-store';
+import {api} from 'boot/axios';
+import {useGeneralStore} from '@/stores/general-store';
+import {formatApiErrorMessage} from '@/helpers/error-message-utils';
+import {isToday, normalizeDate} from '@/helpers/date-utils';
+
 const API_BASE_URL = process.env.BASE_URL;
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
@@ -9,15 +12,6 @@ const CURRENCIES_STORAGE_KEY = 'currencies_data';
 const FIVE_MINUTES_MS = 5 * 60 * 1000;
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const ONE_MONTH_MS = 30 * 24 * ONE_HOUR_MS;
-
-/**
- * Normalize a date string to use "/" as the separator.
- * @param {string} date - The date string in any format (e.g. "2024-12-20" or "2024/12/20").
- * @returns {string} - The normalized date string (e.g. "2024/12/20").
- */
-function normalizeDate(date) {
-  return date.replaceAll('-', '/');
-}
 
 /**
  * Helper function for fetching cached data
@@ -105,80 +99,109 @@ async function fetchCurrencies() {
   }
 }
 
-async function fetchExchangeRate(source, target, date) {
+async function fetchRateWithCache(endpoint, cacheKey, source, target, date, callbackKeyName, isTodayCheck, isValidCache) {
   const generalStore = useGeneralStore();
+  const CALLBACK_KEY = callbackKeyName;
+
   try {
     generalStore.loading = true;
 
     const token = await getToken();
     validateToken(token);
-    const normalizedDate = normalizeDate(date);
-    const cacheKey = `exchange_rate_${source}_${target}_${normalizedDate}`;
-    const isToday = normalizedDate === new Date().toLocaleDateString('en-CA').split('T')[0].replaceAll('-', '/');
 
-    return fetchCachedData(
+    const response = await fetchCachedData(
       cacheKey,
       async () => {
-        const response = await api.get(
-          `${API_BASE_URL}/api/currency-exchange/exchange-rate`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { source_currency: source, target_currency: target, date: normalizedDate }
-          }
-        );
-        return response.data;
+        return await api.get(endpoint, {
+          headers: { Authorization: `Bearer ${token}` },
+          params: { source_currency: source, target_currency: target, date }
+        }).then((res) => res.data);
       },
-      (cachedData) => {
-        const cacheAge = new Date().getTime() - cachedData.timestamp;
-        return isToday
-          ? cacheAge < FIVE_MINUTES_MS
-          : cacheAge < ONE_MONTH_MS;
-      }
+      isValidCache
     );
+
+    if (response && response.success) {
+      const defaultFrom = localStorage.getItem('currencyFrom') || 'USD';
+      const defaultTo = localStorage.getItem('currencyTo') || 'VES';
+
+      if (
+        (source === defaultFrom && target === defaultTo) ||
+        (source === defaultTo && target === defaultFrom)
+      ) {
+        localStorage.setItem(CALLBACK_KEY, JSON.stringify(response));
+      }
+
+      return response;
+    } else {
+      throw new Error('API not available.');
+    }
   } catch (error) {
-    console.error('Error fetching exchange rate:', error);
-    return null;
+    console.error(`Error fetching data from ${endpoint}`, error);
+
+    const defaultData = JSON.parse(localStorage.getItem(CALLBACK_KEY));
+    if (defaultData && defaultData.success) {
+      generalStore.error = formatApiErrorMessage(defaultData.data.date);
+      if (isTodayCheck && source === defaultData.data.source_currency && target === defaultData.data.target_currency) {
+        return defaultData;
+      }
+
+      if (isTodayCheck && source === defaultData.data.target_currency && target === defaultData.data.source_currency) {
+        return {
+          ...defaultData,
+          data: {
+            ...defaultData.data,
+            source_currency: source,
+            target_currency: target,
+            exchange_rate: (1 / parseFloat(defaultData.data.exchange_rate)).toString(),
+          },
+        };
+      }
+    } else {
+      generalStore.error = 'No se pudieron obtener los datos. Por favor, inténtalo más tarde.';
+    }
   } finally {
     generalStore.loading = false;
   }
+
+  return null;
+}
+
+async function fetchExchangeRate(source, target, date) {
+  const normalizedDate = normalizeDate(date);
+  const todayCheck = isToday(normalizedDate);
+
+  return fetchRateWithCache(
+    `${API_BASE_URL}/api/currency-exchange/exchange-rate`,
+    `exchange_rate_${source}_${target}_${normalizedDate}`,
+    source,
+    target,
+    normalizedDate,
+    'default_exchange_rate',
+    todayCheck,
+    (cachedData) => {
+      const cacheAge = new Date().getTime() - cachedData.timestamp;
+      return todayCheck ? cacheAge < FIVE_MINUTES_MS : cacheAge < ONE_MONTH_MS;
+    }
+  );
 }
 
 async function fetchParallelRate(source, target, date) {
-  const generalStore = useGeneralStore();
-  try {
-    generalStore.loading = true;
+  const normalizedDate = normalizeDate(date);
+  const todayCheck = isToday(normalizedDate);
 
-    const token = await getToken();
-    validateToken(token);
-    const normalizedDate = normalizeDate(date);
-    const cacheKey = `parallel_rate_${source}_${target}_${normalizedDate}`;
-    const isToday = normalizedDate === new Date().toLocaleDateString('en-CA').split('T')[0].replaceAll('-', '/');
-
-    return fetchCachedData(
-      cacheKey,
-      async () => {
-        const response = await api.get(
-          `${API_BASE_URL}/api/currency-exchange/exchange-parallel-rate`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { source_currency: source, target_currency: target, date: normalizedDate }
-          }
-        );
-        return response.data;
-      },
-      (cachedData) => {
-        const cacheAge = new Date().getTime() - cachedData.timestamp;
-        return isToday
-          ? cacheAge < FIVE_MINUTES_MS
-          : cacheAge < ONE_MONTH_MS;
-      }
-    );
-  } catch (error) {
-    console.error('Error fetching parallel rate:', error);
-    return null;
-  } finally {
-    generalStore.loading = false;
-  }
+  return fetchRateWithCache(
+    `${API_BASE_URL}/api/currency-exchange/exchange-parallel-rate`,
+    `parallel_rate_${source}_${target}_${normalizedDate}`,
+    source,
+    target,
+    normalizedDate,
+    'default_parallel_rate',
+    todayCheck,
+    (cachedData) => {
+      const cacheAge = new Date().getTime() - cachedData.timestamp;
+      return todayCheck ? cacheAge < FIVE_MINUTES_MS : cacheAge < ONE_MONTH_MS;
+    }
+  );
 }
 
 /**
