@@ -10,8 +10,7 @@
               mask="date"
               :rules="['date']"
               input-class=""
-              class="q-mb-md"
-              hint="Disponible desde el 01 de enero de 2000"
+              hint="Desde el 01/01/2000"
               persistent-hint
               label="Fecha"
               :input-style="{ fontSize: '1.2rem' }"
@@ -36,22 +35,51 @@
               </template>
             </q-input>
           </div>
-          <div class="col-refresh-btn">
-            <q-btn
-              flat
-              icon="refresh"
-              color="primary"
-              class="refresh-btn q-ml-sm"
-              @click="refreshResults"
-            >
-              <q-tooltip :hide-delay="700" class="bg-primary text-white">
-                Refrescando
-              </q-tooltip>
-            </q-btn>
+          <div class="col q-ml-sm">
+            <AmountInput v-model="amount" />
           </div>
         </div>
 
-        <AmountInput v-model="amount" />
+        <div class="row no-wrap q-mt-md">
+          <q-btn
+            flat
+            color="blue"
+            class="col q-mr-xs btn-reset"
+            @click="resetData"
+          >
+            <span>Res.</span>
+            <q-icon name="refresh" class="q-ml-xs" />
+            <q-tooltip :hide-delay="700" class="bg-blue text-white">
+              Restableciendo
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+            flat
+            color="orange"
+            class="col q-mx-xs btn-exchange"
+            @click="exchangeCurrencies"
+          >
+            <span>Int.</span>
+            <q-icon name="swap_horiz" class="q-ml-xs" />
+            <q-tooltip :hide-delay="700" class="bg-orange text-white">
+              Intercambiando
+            </q-tooltip>
+          </q-btn>
+
+          <q-btn
+            flat
+            color="green"
+            class="col q-ml-xs btn-refresh"
+            @click="refreshResults"
+          >
+            <span>Act.</span>
+            <q-icon name="update" class="q-ml-xs" />
+            <q-tooltip :hide-delay="700" class="bg-green text-white">
+              Actualizando
+            </q-tooltip>
+          </q-btn>
+        </div>
 
         <CurrencySelect
           v-model="currencyFrom"
@@ -226,6 +254,21 @@ const refreshResults = async () => {
   }
 };
 
+const exchangeCurrencies = async () => {
+  const CURRENCY_FROM = currencyFrom.value;
+  currencyFrom.value = currencyTo.value;
+  currencyTo.value = CURRENCY_FROM;
+}
+
+const resetData = async () => {
+  const storedFrom = localStorage.getItem('currencyFrom') || 'USD';
+  const storedTo = localStorage.getItem('currencyTo') || 'VES';
+  date.value = getTodayForCalendar();
+  currencyFrom.value = storedFrom;
+  currencyTo.value = storedTo;
+  amount.value = 1;
+}
+
 const initializeData = async () => {
   if (generalStore.getInitialLoad) {
     const storedFrom = localStorage.getItem('currencyFrom') || 'USD';
@@ -296,16 +339,27 @@ watch(
   padding: 5px 0;
   margin-top: 5px;
 }
-.col-refresh-btn {
-  min-width: 60px !important;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: -34px;
+
+.btn-reset {
+  background-color: #e0f7fa;
+  color: #00796b;
+  font-weight: bold;
 }
-.refresh-btn {
-  height: 56px;
-  background-color: #4A90E2;
-  color: #FFFFFF !important;
+
+.btn-exchange {
+  background-color: #ffe0b2;
+  color: #ef6c00;
+  font-weight: bold;
+}
+
+.btn-refresh {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.q-btn span {
+  font-size: 0.9rem; /* Tamaño del texto */
 }
 </style>
 
