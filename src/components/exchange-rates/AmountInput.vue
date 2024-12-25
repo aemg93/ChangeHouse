@@ -4,12 +4,14 @@
     type="number"
     v-model="temporaryValue"
     :rules="appliedRules"
-    class="input-amount q-mt-sm"
+    class="input-amount"
     input-class="text-right"
     label="Monto"
     :input-style="{ fontSize: '1.2rem' }"
     @focus="clearTemporaryValue"
     @blur="checkEmptyValue"
+    :hint="hintMessage"
+    persistent-hint
   />
 </template>
 
@@ -28,6 +30,8 @@ const emit = defineEmits(["update:modelValue"]);
 const temporaryValue = ref(String(props.modelValue));
 
 const isFocused = ref(false);
+
+const hintMessage = ref("Debe ser mayor a 0");
 
 watch(
   () => props.modelValue,
@@ -69,7 +73,7 @@ const checkEmptyValue = () => {
 const appliedRules = ref([
   (val) => {
     if (!isFocused.value) {
-      return parseFloat(val) > 0 || "El monto debe ser mayor a 0";
+      return parseFloat(val) > 0 || hintMessage.value;
     }
     return true;
   },
@@ -78,6 +82,6 @@ const appliedRules = ref([
 
 <style scoped>
 .input-amount {
-  margin-bottom: -10px;
+
 }
 </style>
