@@ -288,10 +288,7 @@ onMounted(async () => {
     await initializeData();
     isInitialized.value = true;
   } else if (parseInt(exchangeRateStore.getExchangeRate, 0) === 0) {
-    currencyFrom.value = localStorage.getItem('currencyFrom') || 'USD';
-    currencyTo.value = localStorage.getItem('currencyTo') || 'VES';
-    date.value = getTodayForCalendar();
-    await refreshResults();
+    await resetData();
   }
 });
 
