@@ -284,9 +284,14 @@ const initializeData = async () => {
 };
 
 onMounted(async () => {
-  if (!isInitialized.value) {
+  if (!isInitialized.value && parseInt(exchangeRateStore.getExchangeRate, 0) !== 0) {
     await initializeData();
     isInitialized.value = true;
+  } else if (parseInt(exchangeRateStore.getExchangeRate, 0) === 0) {
+    currencyFrom.value = localStorage.getItem('currencyFrom') || 'USD';
+    currencyTo.value = localStorage.getItem('currencyTo') || 'VES';
+    date.value = getTodayForCalendar();
+    await refreshResults();
   }
 });
 
