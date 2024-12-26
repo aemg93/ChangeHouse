@@ -43,6 +43,15 @@
     <q-page-container class="page-container">
       <router-view />
     </q-page-container>
+    <q-footer class="footer-bar" v-show="isFooterVisible">
+      <div
+        class="scrolling-message"
+        ref="scrollingMessage"
+        @animationiteration="incrementMessageCount"
+      >
+        Disfruta de nuestra app totalmente gratis y sin publicidad.
+      </div>
+    </q-footer>
   </q-layout>
 </template>
 
@@ -50,6 +59,8 @@
 import { ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue';
 import CaptureShareComponent from '@/components/CaptureShareComponent.vue';
+const isFooterVisible = ref(true);
+const messageRepetitionCount = ref(0);
 
 defineOptions({
   name: 'MainLayout'
@@ -96,6 +107,12 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
+function incrementMessageCount() {
+  messageRepetitionCount.value++;
+  if (messageRepetitionCount.value >= 3) {
+    isFooterVisible.value = false;
+  }
+}
 </script>
 
 <style scoped>
@@ -109,5 +126,36 @@ function toggleLeftDrawer() {
 }
 .link-menu {
   font-size: 2rem;
+}
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #3985fa;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  overflow: hidden;
+  z-index: 2;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scrolling-message {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-left 8s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 </style>
