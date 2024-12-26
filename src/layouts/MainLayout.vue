@@ -101,6 +101,7 @@ function toggleLeftDrawer() {
 <style scoped>
 .page-container {
   background: #F8F9FA;
+  min-height: 100vh !important;
 }
 .active-link {
   background-color: #080808 !important;
