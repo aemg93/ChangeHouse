@@ -39,8 +39,10 @@
 import { ref, computed, onMounted } from 'vue';
 import { useCurrencyStore } from '@/stores/currency-store';
 import CurrencySelect from '@/components/CurrencySelect.vue';
+import { useExchangeRateStore } from '@/stores/exchange-rate-store';
 
 const currencyStore = useCurrencyStore();
+const exchangeRateStore = useExchangeRateStore();
 
 const currencyFrom = ref('');
 const currencyTo = ref('');
@@ -64,8 +66,42 @@ const loadSettings = () => {
 };
 
 const saveSettings = () => {
-  localStorage.setItem('currencyFrom', currencyFrom.value);
-  localStorage.setItem('currencyTo', currencyTo.value);
+  const exchangeRate = JSON.parse(localStorage.getItem('default_exchange_rate'));
+  const parallelRate = JSON.parse(localStorage.getItem('default_parallel_rate'));
+  const fromCurrency = localStorage.getItem('currencyFrom') || 'USD';
+  const toCurrency = localStorage.getItem('currencyTo') || 'VES';
+
+  if (
+    exchangeRate &&
+    (
+      (exchangeRate.data.source_currency === fromCurrency && exchangeRate.data.target_currency === toCurrency) ||
+      (exchangeRate.data.source_currency === toCurrency && exchangeRate.data.target_currency === fromCurrency)
+    )
+  ) {
+    localStorage.removeItem('default_exchange_rate');
+  }
+
+  if (
+    parallelRate &&
+    (
+      (parallelRate.data.source_currency === fromCurrency && parallelRate.data.target_currency === toCurrency) ||
+      (parallelRate.data.source_currency === toCurrency && parallelRate.data.target_currency === fromCurrency)
+    )
+  ) {
+    localStorage.removeItem('default_parallel_rate');
+  }
+
+  const from = currencyFrom.value;
+  const to = currencyTo.value;
+
+  localStorage.setItem('currencyFrom', from);
+  localStorage.setItem('currencyTo', to);
+
+  if (from !== fromCurrency || to !== toCurrency) {
+    exchangeRateStore.setExchangeRate(0);
+    exchangeRateStore.setParallelRate(0);
+  }
+
   successMessage.value = 'Configuración guardada exitosamente.';
   setTimeout(() => {
     successMessage.value = '';
