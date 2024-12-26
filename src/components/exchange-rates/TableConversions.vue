@@ -312,6 +312,7 @@ watch(
         message: newError,
         position: 'center',
         timeout: 5000,
+        classes: 'custom-notify-error',
       });
 
       setTimeout(() => generalStore.error = '',5000);
@@ -373,5 +374,10 @@ watch(
 .q-field__control:before,
 .q-field__control:after {
   content: unset !important;
+}
+.custom-notify-error {
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
 }
 </style>
