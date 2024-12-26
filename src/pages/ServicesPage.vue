@@ -1,23 +1,21 @@
 <template>
   <q-page class="services-page">
     <div class="services-container">
-      <h1 class="title">Nuestros Servicios</h1>
-      <p class="subtitle">Ofrecemos soluciones personalizadas en desarrollo e integración.</p>
+      <h1 class="title">Soluciones Personalizadas</h1>
+      <p class="subtitle">Potenciamos tu negocio con servicios de desarrollo e integración a medida.</p>
 
       <ul class="services-list">
-        <li class="service-item">Desarrollo Web y Móvil</li>
+        <li class="service-item">Desarrollo Web, Móvil y E-commerce</li>
         <li class="service-item">Integración de APIs en ERP</li>
-        <li class="service-item">Implementación de CRM personalizados</li>
-        <li class="service-item">Integración de ERP/CRM con sistemas de ecommerce</li>
-        <li class="service-item">Desarrollo de soluciones a medida para ecommerce (VTEX, SAP, etc.)</li>
-        <li class="service-item">Consultoría en desarrollo y arquitectura de software</li>
-        <li class="service-item">Creación e integración de métodos de pago personalizados</li>
-        <li class="service-item">Automatización de procesos empresariales</li>
+        <li class="service-item">CRM Personalizados y desarrollados a medida</li>
+        <li class="service-item">Soluciones completas para SAP, VTEX y más</li>
+        <li class="service-item">Automatización y optimización de procesos empresariales</li>
+        <li class="service-item">Métodos de pago personalizados y recursos técnicos</li>
         <li class="service-item">Capacitación y documentación técnica para desarrolladores</li>
       </ul>
 
       <div class="contact-container">
-        <p class="note">¿Interesado en alguno de nuestros servicios? Contáctanos:</p>
+        <p class="note">Convierte tu idea en una solución a medida. Contáctanos:</p>
         <div class="contact-info">
           <p><strong>Correo:</strong> <a href="mailto:{{ contact.email }}" class="contact-link">{{ contact.email }}</a></p>
           <p><strong>Móvil:</strong> <a href="tel:{{ contact.mobile }}" class="contact-link">{{ contact.mobile }}</a></p>
@@ -49,12 +47,12 @@ const contact = ref({
 
 .title {
   font-size: 2rem;
-  margin-bottom: 10px;
+  margin: 40px 0 20px 0;
+  line-height: 3rem;
 }
 
 .subtitle {
   font-size: 1rem;
-  margin-top: -10px;
   margin-bottom: 20px;
   color: #555;
 }
