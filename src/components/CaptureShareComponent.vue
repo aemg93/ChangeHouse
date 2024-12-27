@@ -1,6 +1,6 @@
 <template>
     <q-btn
-      icon="las la-share-alt-square"
+      icon="las la-share-square"
       class="share-btn q-px-sm"
       @click="captureAndShare"
     />
