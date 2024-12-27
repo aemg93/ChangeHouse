@@ -1,7 +1,7 @@
 <template>
   <q-page class="credits-page">
     <div class="team-container">
-      <h1 class="title">Acerca de Nosotros</h1>
+      <h1 class="title">Nuestro Equipo</h1>
       <p class="subtitle">Este proyecto fue desarrollado por un equipo talentoso:</p>
 
       <div class="team-grid">
@@ -29,12 +29,17 @@ const team = ref([
     image: new URL("./../assets/JoseG.jpg", import.meta.url)
   },
   {
-    name: "Julio C. Uranga",
+    name: "Miguel González",
+    role: "Mid-level FrontEnd Developer",
+    image: new URL("./../assets/MiguelG.jpg", import.meta.url)
+  },
+  {
+    name: "Julio Uranga",
     role: "Junior BackEnd Developer",
     image: new URL("./../assets/JulioU.jpg", import.meta.url)
   },
   {
-    name: "Ángel E. Moreno",
+    name: "Ángel Moreno",
     role: "Junior FrontEnd Developer",
     image: new URL("./../assets/AngelM.png", import.meta.url)
   }
@@ -44,7 +49,7 @@ const team = ref([
 <style scoped>
 .credits-page {
   text-align: center;
-  margin-top: -20px;
+  margin: -20px 0 40px 0;
   padding: 0 30px;
   font-family: Arial, sans-serif;
   color: #333;
