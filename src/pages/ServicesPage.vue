@@ -18,7 +18,6 @@
         <p class="note">Convierte tu idea en una solución a medida. Contáctanos:</p>
         <div class="contact-info">
           <p><strong>Correo:</strong> <a href="mailto:{{ contact.email }}" class="contact-link">{{ contact.email }}</a></p>
-          <p><strong>Móvil:</strong> <a href="tel:{{ contact.mobile }}" class="contact-link">{{ contact.mobile }}</a></p>
           <p><strong>Web:</strong> <a :href="contact.website" class="contact-link" target="_blank">{{ contact.website }}</a></p>
         </div>
       </div>
