@@ -86,6 +86,7 @@
           :options="filteredOptionsFrom"
           label="Moneda de origen"
           :filter-handler="filterFrom"
+          @update:model-value="(value) => handleCurrencySelection(value, 'from')"
         />
 
         <CurrencySelect
@@ -93,6 +94,7 @@
           :options="filteredOptionsTo"
           label="Moneda destino"
           :filter-handler="filterTo"
+          @update:model-value="(value) => handleCurrencySelection(value, 'to')"
         />
       </div>
 
@@ -147,6 +149,9 @@ const searchFrom = ref('');
 const searchTo = ref('');
 const isInitialized = ref(false);
 
+const previousCurrencyFrom = ref(currencyFrom.value);
+const previousCurrencyTo = ref(currencyTo.value);
+
 const currencyStore = useCurrencyStore();
 const exchangeRateStore = useExchangeRateStore();
 const generalStore = useGeneralStore();
@@ -185,7 +190,7 @@ const filteredOptionsFrom = computed(() => {
   return options.value.filter(option => {
     const label = removeAccents(option.label.toLowerCase());
     const search = removeAccents(searchFrom.value.toLowerCase());
-    return option.value !== currencyTo.value && label.includes(search);
+    return label.includes(search);
   });
 });
 
@@ -193,9 +198,29 @@ const filteredOptionsTo = computed(() => {
   return options.value.filter(option => {
     const label = removeAccents(option.label.toLowerCase());
     const search = removeAccents(searchTo.value.toLowerCase());
-    return option.value !== currencyFrom.value && label.includes(search);
+    return label.includes(search);
   });
 });
+
+const handleCurrencySelection = (selectedCurrency, target) => {
+  if (target === "from") {
+    if (selectedCurrency === currencyTo.value) {
+      currencyFrom.value = previousCurrencyTo.value;
+      currencyTo.value = previousCurrencyFrom.value;
+    } else {
+      currencyFrom.value = selectedCurrency;
+    }
+    previousCurrencyFrom.value = selectedCurrency;
+  } else if (target === "to") {
+    if (selectedCurrency === currencyFrom.value) {
+      currencyTo.value = previousCurrencyFrom.value;
+      currencyFrom.value = previousCurrencyTo.value;
+    } else {
+      currencyTo.value = selectedCurrency;
+    }
+    previousCurrencyTo.value = selectedCurrency;
+  }
+};
 
 const showParallelRate = computed(() => currencyFrom.value === 'VES' || currencyTo.value === 'VES');
 
@@ -237,7 +262,7 @@ const refreshResults = async () => {
   parallelResult.value = 0;
   generalStore.loading = true;
   try {
-    if (currencyFrom.value && currencyTo.value && date.value) {
+    if (currencyFrom.value && currencyTo.value && currencyFrom.value !== currencyTo.value && date.value) {
       const promises = [
         exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }),
       ];
