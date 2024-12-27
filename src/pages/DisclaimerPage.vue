@@ -1,7 +1,7 @@
 <template>
-  <q-page class="flex flex-center">
+  <q-page class="flex flex-center services-page">
     <div style="max-width: 600px; width: 100%; padding: 20px;">
-      <h6 class="text-center text-primary">Descargo de Responsabilidad</h6>
+      <h5 class="text-center title">Descargo de Responsabilidad</h5>
 
       <p class="q-mt-md q-mb-none">
         Esta aplicación fue diseñada como una herramienta informativa para acceder a tasas de cambio actualizadas.
@@ -56,6 +56,20 @@ const navigateBack = () => {
 </script>
 
 <style scoped>
+.services-page {
+  margin-top: -20px;
+  padding: 0 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.title {
+  font-size: 2rem;
+  margin: 40px 0 20px 0;
+  line-height: 3rem;
+  color: #007bff;
+}
+
 h6 {
   margin-bottom: 0;
   margin-top: 0;
