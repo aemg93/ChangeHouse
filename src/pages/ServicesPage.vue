@@ -10,7 +10,7 @@
         <li class="service-item">CRM Personalizados y desarrollados a medida</li>
         <li class="service-item">Soluciones completas para SAP, VTEX y más</li>
         <li class="service-item">Automatización y optimización de procesos empresariales</li>
-        <li class="service-item">Métodos de pago personalizados y recursos técnicos</li>
+        <li class="service-item">Métodos de pago personalizados</li>
         <li class="service-item">Capacitación y documentación técnica para desarrolladores</li>
       </ul>
 
@@ -38,7 +38,7 @@ const contact = ref({
 <style scoped>
 .services-page {
   text-align: center;
-  margin-top: -20px;
+  margin: 0 auto;
   padding: 0 30px;
   font-family: Arial, sans-serif;
   color: #333;
@@ -48,6 +48,7 @@ const contact = ref({
   font-size: 2rem;
   margin: 40px 0 20px 0;
   line-height: 3rem;
+  color: #007bff;
 }
 
 .subtitle {
@@ -68,7 +69,7 @@ const contact = ref({
 }
 
 .service-item {
-  background: #f9f9f9;
+  background: #fff;
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 10px 20px;
