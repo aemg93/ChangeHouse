@@ -43,7 +43,7 @@
     <q-page-container class="page-container">
       <router-view />
     </q-page-container>
-    <q-footer class="footer-bar" v-show="isFooterVisible">
+    <q-footer class="footer-bar" v-if="isFooterVisible">
       <div
         class="scrolling-message"
         ref="scrollingMessage"
@@ -92,6 +92,12 @@ const linksList = [
     caption: '',
     icon: 'las la-info-circle',
     link: 'about-us'
+  },
+  {
+    title: 'Créditos',
+    caption: '',
+    icon: 'las la-users',
+    link: 'credits'
   },
   {
     title: 'Descargo de Responsabilidad',
