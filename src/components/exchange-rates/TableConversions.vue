@@ -279,11 +279,12 @@ watch(
         type: 'negative',
         message: newError,
         position: 'center',
-        timeout: 5000,
-        classes: 'custom-notify-error',
+        timeout: 3500,
+        actions: [{ icon: 'close', color: 'black' }],
+        classes: 'custom-notify-error'
       });
 
-      setTimeout(() => generalStore.error = '',5000);
+      setTimeout(() => generalStore.error = '',3500);
     }
   }
 );
