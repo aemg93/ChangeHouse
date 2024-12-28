@@ -203,21 +203,19 @@ const filteredOptionsTo = computed(() => {
 });
 
 const handleCurrencySelection = (selectedCurrency, target) => {
+  searchFrom.value = '';
+  searchTo.value = '';
   if (target === "from") {
     if (selectedCurrency === currencyTo.value) {
-      currencyFrom.value = previousCurrencyTo.value;
       currencyTo.value = previousCurrencyFrom.value;
-    } else {
-      currencyFrom.value = selectedCurrency;
     }
+    currencyFrom.value = selectedCurrency;
     previousCurrencyFrom.value = selectedCurrency;
   } else if (target === "to") {
     if (selectedCurrency === currencyFrom.value) {
-      currencyTo.value = previousCurrencyFrom.value;
       currencyFrom.value = previousCurrencyTo.value;
-    } else {
-      currencyTo.value = selectedCurrency;
     }
+    currencyTo.value = selectedCurrency;
     previousCurrencyTo.value = selectedCurrency;
   }
 };
