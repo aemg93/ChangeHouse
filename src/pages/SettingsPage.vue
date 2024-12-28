@@ -143,6 +143,8 @@ const filteredOptionsTo = computed(() => {
 });
 
 const handleCurrencySelection = (selectedCurrency, target) => {
+  searchFrom.value = '';
+  searchTo.value = '';
   if (target === "from") {
     if (selectedCurrency === currencyTo.value) {
       currencyFrom.value = previousCurrencyTo.value;
