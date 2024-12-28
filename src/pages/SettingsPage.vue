@@ -11,6 +11,7 @@
         label="Moneda de origen"
         :rules="[validateCurrencies]"
         :filter-handler="filterFrom"
+        @update:model-value="(value) => handleCurrencySelection(value, 'from')"
       />
 
       <CurrencySelect
@@ -19,6 +20,7 @@
         label="Moneda de destino"
         :rules="[validateCurrencies]"
         :filter-handler="filterTo"
+        @update:model-value="(value) => handleCurrencySelection(value, 'to')"
       />
 
       <q-btn
@@ -29,8 +31,6 @@
         :disable="!isValid"
         @click="saveSettings"
       />
-
-      <p v-if="successMessage" class="text-positive q-mt-md text-center">{{ successMessage }}</p>
     </div>
   </q-page>
 </template>
@@ -40,13 +40,17 @@ import { ref, computed, onMounted } from 'vue';
 import { useCurrencyStore } from '@/stores/currency-store';
 import CurrencySelect from '@/components/CurrencySelect.vue';
 import { useExchangeRateStore } from '@/stores/exchange-rate-store';
+import { useQuasar } from 'quasar';
+
+const $q = useQuasar();
 
 const currencyStore = useCurrencyStore();
 const exchangeRateStore = useExchangeRateStore();
 
 const currencyFrom = ref('');
 const currencyTo = ref('');
-const successMessage = ref('');
+const previousCurrencyFrom = ref(currencyFrom.value);
+const previousCurrencyTo = ref(currencyTo.value);
 
 const validateCurrencies = () => {
   if (!currencyFrom.value || !currencyTo.value) {
@@ -102,10 +106,12 @@ const saveSettings = () => {
     exchangeRateStore.setParallelRate(0);
   }
 
-  successMessage.value = 'Configuración guardada exitosamente.';
-  setTimeout(() => {
-    successMessage.value = '';
-  }, 3000);
+  $q.notify({
+    type: 'warning',
+    message: 'Configuración guardada exitosamente.',
+    position: 'top',
+    timeout: 3000,
+  });
 };
 
 const options = computed(() =>
@@ -118,21 +124,43 @@ const options = computed(() =>
 const searchFrom = ref('');
 const searchTo = ref('');
 
+const removeAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 const filteredOptionsFrom = computed(() => {
   return options.value.filter(option => {
-    const label = option.label.toLowerCase();
-    const search = searchFrom.value.toLowerCase();
-    return option.value !== currencyTo.value && label.includes(search);
+    const label = removeAccents(option.label.toLowerCase());
+    const search = removeAccents(searchFrom.value.toLowerCase());
+    return label.includes(search);
   });
 });
 
 const filteredOptionsTo = computed(() => {
   return options.value.filter(option => {
-    const label = option.label.toLowerCase();
-    const search = searchTo.value.toLowerCase();
-    return option.value !== currencyFrom.value && label.includes(search);
+    const label = removeAccents(option.label.toLowerCase());
+    const search = removeAccents(searchTo.value.toLowerCase());
+    return label.includes(search);
   });
 });
+
+const handleCurrencySelection = (selectedCurrency, target) => {
+  if (target === "from") {
+    if (selectedCurrency === currencyTo.value) {
+      currencyFrom.value = previousCurrencyTo.value;
+      currencyTo.value = previousCurrencyFrom.value;
+    } else {
+      currencyFrom.value = selectedCurrency;
+    }
+    previousCurrencyFrom.value = selectedCurrency;
+  } else if (target === "to") {
+    if (selectedCurrency === currencyFrom.value) {
+      currencyTo.value = previousCurrencyFrom.value;
+      currencyFrom.value = previousCurrencyTo.value;
+    } else {
+      currencyTo.value = selectedCurrency;
+    }
+    previousCurrencyTo.value = selectedCurrency;
+  }
+};
 
 const filterFrom = (val, update) => {
   searchFrom.value = val;
