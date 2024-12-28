@@ -175,7 +175,7 @@ function incrementMessageCount() {
   content: unset !important;
 }
 .custom-notify-error {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   text-align: center;
 }
