@@ -49,7 +49,7 @@ const team = ref([
 <style scoped>
 .credits-page {
   text-align: center;
-  margin: -20px 0 40px 0;
+  margin: 0 0 40px 0;
   padding: 0 30px;
   font-family: Arial, sans-serif;
   color: #333;
@@ -57,13 +57,16 @@ const team = ref([
 
 .title {
   font-size: 2rem;
-  margin-bottom: 0;
+  margin: 40px 0 20px 0;
+  line-height: 3rem;
+  color: #007bff;
 }
 
 .subtitle {
   font-size: 1rem;
   margin-top: -10px;
   margin-bottom: 20px;
+  font-weight: bold;
   color: #555;
 }
 
