@@ -110,6 +110,7 @@ const saveSettings = () => {
     message: 'Configuración guardada exitosamente.',
     position: 'top',
     timeout: 3000,
+    actions: [{ icon: 'close', color: 'black' }]
   });
 };
 
