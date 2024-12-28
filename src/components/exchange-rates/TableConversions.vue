@@ -134,25 +134,29 @@ import { currencyFormat } from '@/helpers/currency-utils';
 import { getTodayForCalendar, getMinDateForCalendar } from '@/helpers/date-utils';
 import AmountInput from '@/components/exchange-rates/AmountInput.vue';
 import CurrencySelect from '@/components/CurrencySelect.vue';
+import useCurrencySelection from '@/composables/useCurrencySelection';
 import { useQuasar } from 'quasar';
 
 // Initial status
 const amount = ref(1);
-const currencyFrom = ref('USD');
-const currencyTo = ref('VES');
 const result = ref(0);
 const parallelResult = ref(0);
 const date = ref(getTodayForCalendar());
 const dateProxy = ref(null);
 
-const searchFrom = ref('');
-const searchTo = ref('');
 const isInitialized = ref(false);
 
-const previousCurrencyFrom = ref(currencyFrom.value);
-const previousCurrencyTo = ref(currencyTo.value);
-
 const currencyStore = useCurrencyStore();
+const {
+  currencyFrom,
+  currencyTo,
+  filteredOptionsFrom,
+  filteredOptionsTo,
+  loadSettings,
+  handleCurrencySelection,
+  filterFrom,
+  filterTo
+} = useCurrencySelection(currencyStore);
 const exchangeRateStore = useExchangeRateStore();
 const generalStore = useGeneralStore();
 const $q = useQuasar();
@@ -177,49 +181,6 @@ const disableDates = (inputDate) => {
   return inputDate >= minDate && inputDate <= maxDate;
 };
 
-const options = computed(() =>
-  currencyStore.getCurrencies.map(currency => ({
-    label: currency.name,
-    value: currency.code,
-  }))
-);
-
-const removeAccents = (str) => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-
-const filteredOptionsFrom = computed(() => {
-  return options.value.filter(option => {
-    const label = removeAccents(option.label.toLowerCase());
-    const search = removeAccents(searchFrom.value.toLowerCase());
-    return label.includes(search);
-  });
-});
-
-const filteredOptionsTo = computed(() => {
-  return options.value.filter(option => {
-    const label = removeAccents(option.label.toLowerCase());
-    const search = removeAccents(searchTo.value.toLowerCase());
-    return label.includes(search);
-  });
-});
-
-const handleCurrencySelection = (selectedCurrency, target) => {
-  searchFrom.value = '';
-  searchTo.value = '';
-  if (target === "from") {
-    if (selectedCurrency === currencyTo.value) {
-      currencyTo.value = previousCurrencyFrom.value;
-    }
-    currencyFrom.value = selectedCurrency;
-    previousCurrencyFrom.value = selectedCurrency;
-  } else if (target === "to") {
-    if (selectedCurrency === currencyFrom.value) {
-      currencyFrom.value = previousCurrencyTo.value;
-    }
-    currencyTo.value = selectedCurrency;
-    previousCurrencyTo.value = selectedCurrency;
-  }
-};
-
 const showParallelRate = computed(() => currencyFrom.value === 'VES' || currencyTo.value === 'VES');
 
 const averageRate = computed(() => {
@@ -236,16 +197,6 @@ const getCurrencyProperty = (currencyCode, property) => {
 
 const nameCurrencyFrom = computed(() => getCurrencyProperty(currencyFrom.value, 'name'));
 const nameCurrencyTo = computed(() => getCurrencyProperty(currencyTo.value, 'name'));
-
-const filterFrom = (val, update) => {
-  searchFrom.value = val;
-  update();
-};
-
-const filterTo = (val, update) => {
-  searchTo.value = val;
-  update();
-};
 
 const updateResults = () => {
   const rate = exchangeRateStore.getExchangeRate;
@@ -285,20 +236,14 @@ const exchangeCurrencies = async () => {
 }
 
 const resetData = async () => {
-  const storedFrom = localStorage.getItem('currencyFrom') || 'USD';
-  const storedTo = localStorage.getItem('currencyTo') || 'VES';
+  loadSettings();
   date.value = getTodayForCalendar();
-  currencyFrom.value = storedFrom;
-  currencyTo.value = storedTo;
   amount.value = 1;
 }
 
 const initializeData = async () => {
   if (generalStore.getInitialLoad) {
-    const storedFrom = localStorage.getItem('currencyFrom') || 'USD';
-    const storedTo = localStorage.getItem('currencyTo') || 'VES';
-    currencyFrom.value = storedFrom;
-    currencyTo.value = storedTo;
+    loadSettings();
     generalStore.updateCurrentCurrencies(currencyFrom.value, currencyTo.value);
     generalStore.setInitialLoad(false);
   }
