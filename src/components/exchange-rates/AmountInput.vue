@@ -79,9 +79,3 @@ const appliedRules = ref([
   },
 ]);
 </script>
-
-<style scoped>
-.input-amount {
-
-}
-</style>
