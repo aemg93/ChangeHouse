@@ -391,18 +391,3 @@ watch(
   font-size: 0.9rem; /* Tamaño del texto */
 }
 </style>
-
-<style>
-.q-field__native:has(input[aria-expanded="true"]) span {
-  display: none !important;
-}
-.q-field__control:before,
-.q-field__control:after {
-  content: unset !important;
-}
-.custom-notify-error {
-  font-size: 20px;
-  font-weight: 600;
-  text-align: center;
-}
-</style>
