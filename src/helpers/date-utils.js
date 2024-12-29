@@ -24,10 +24,32 @@ const isToday = date => {
   return normalizeDate(date) === today;
 }
 
+const calculateExpiration = (dateString) => {
+  const normalizedDate = normalizeDate(dateString);
+  const now = new Date();
+  const targetDate = new Date(normalizedDate);
+
+  if (isToday(normalizedDate)) {
+    targetDate.setHours(23, 59, 59, 999);
+    return targetDate.getTime();
+  }
+
+  now.setDate(now.getDate() + 30);
+  now.setHours(23, 59, 59, 999);
+  return now.getTime();
+};
+
+
+const isCacheExpired = (expiresAt) => {
+  return Date.now() > expiresAt;
+};
+
 export {
   getToday,
   getTodayForCalendar,
   getMinDateForCalendar,
   normalizeDate,
-  isToday
+  isToday,
+  calculateExpiration,
+  isCacheExpired
 };
