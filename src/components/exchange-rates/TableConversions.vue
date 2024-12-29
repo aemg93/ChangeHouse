@@ -71,7 +71,7 @@
             flat
             color="green"
             class="col q-ml-xs btn-refresh"
-            @click="refreshResults"
+            @click="refreshResults(true)"
           >
             <span>Act.</span>
             <q-icon name="update" class="q-ml-xs" />
@@ -136,6 +136,8 @@ import AmountInput from '@/components/exchange-rates/AmountInput.vue';
 import CurrencySelect from '@/components/CurrencySelect.vue';
 import useCurrencySelection from '@/composables/useCurrencySelection';
 import { useQuasar } from 'quasar';
+import { clearMidnightExpiringItems } from "@/helpers/local-storage-utils";
+import {clearExchangeAndParallelCurrent} from "src/helpers/local-storage-utils";
 
 // Initial status
 const amount = ref(1);
@@ -206,7 +208,25 @@ const updateResults = () => {
   parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate)) : 0;
 };
 
-const refreshResults = async () => {
+const lastExecutionTime = ref(Date.now());
+
+const REFRESH_INTERVAL_MS = 120 * 1000;
+
+const canExecuteFullRefresh = (full) => {
+  const now = Date.now();
+  const shouldRefresh = full && now - lastExecutionTime.value >= REFRESH_INTERVAL_MS;
+  if (shouldRefresh) {
+    lastExecutionTime.value = now;
+  }
+  return shouldRefresh;
+};
+
+const executeRefresh = async (full = false) => {
+  if (canExecuteFullRefresh(full)) await clearMidnightExpiringItems();
+};
+
+const refreshResults = async (full = false) => {
+  await executeRefresh(full);
   result.value = 0;
   parallelResult.value = 0;
   generalStore.loading = true;
@@ -253,6 +273,7 @@ const initializeData = async () => {
 
 onMounted(async () => {
   if (!isInitialized.value && parseInt(exchangeRateStore.getExchangeRate, 0) !== 0) {
+    clearExchangeAndParallelCurrent();
     await initializeData();
     isInitialized.value = true;
   } else if (parseInt(exchangeRateStore.getExchangeRate, 0) === 0) {
@@ -269,7 +290,7 @@ onActivated(async () => {
 
 const debouncedUpdateResults = debounce(updateResults, 200);
 
-watch([currencyFrom, currencyTo, date], refreshResults);
+watch([currencyFrom, currencyTo, date], () => refreshResults());
 watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], debouncedUpdateResults);
 watch(
   () => generalStore.error,
