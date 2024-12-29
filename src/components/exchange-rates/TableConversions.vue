@@ -137,7 +137,6 @@ import CurrencySelect from '@/components/CurrencySelect.vue';
 import useCurrencySelection from '@/composables/useCurrencySelection';
 import { useQuasar } from 'quasar';
 import { clearMidnightExpiringItems } from "@/helpers/local-storage-utils";
-import {clearExchangeAndParallelCurrent} from "src/helpers/local-storage-utils";
 
 // Initial status
 const amount = ref(1);
@@ -273,7 +272,6 @@ const initializeData = async () => {
 
 onMounted(async () => {
   if (!isInitialized.value && parseInt(exchangeRateStore.getExchangeRate, 0) !== 0) {
-    clearExchangeAndParallelCurrent();
     await initializeData();
     isInitialized.value = true;
   } else if (parseInt(exchangeRateStore.getExchangeRate, 0) === 0) {
