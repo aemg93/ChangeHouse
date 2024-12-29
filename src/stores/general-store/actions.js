@@ -8,6 +8,9 @@ export const actions = {
   setInitialLoad(value) {
     this.initialLoad = value;
   },
+  setLastExecutionTime(value) {
+    this.lastExecutionTime = value;
+  },
   updateCurrentCurrencies(currencyFrom, currencyTo) {
     localStorage.setItem('currentCurrencyFrom', currencyFrom);
     localStorage.setItem('currentCurrencyTo', currencyTo);

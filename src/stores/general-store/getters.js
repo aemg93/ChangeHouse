@@ -1,5 +1,6 @@
 export const getters = {
   getLoading: (state) => state.loading,
   getError: (state) => state.error,
-  getInitialLoad: (state) => state.initialLoad
+  getInitialLoad: (state) => state.initialLoad,
+  getLastExecutionTime: (state) => state.lastExecutionTime
 };
