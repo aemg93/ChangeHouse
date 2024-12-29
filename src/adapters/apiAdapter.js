@@ -1,7 +1,7 @@
 import {api} from 'boot/axios';
 import {useGeneralStore} from '@/stores/general-store';
 import {formatApiErrorMessage} from '@/helpers/error-message-utils';
-import {getToday, isToday, normalizeDate, calculateExpiration, isCacheExpired} from '@/helpers/date-utils';
+import {isToday, normalizeDate, calculateExpiration, isCacheExpired} from '@/helpers/date-utils';
 
 const API_BASE_URL = process.env.BASE_URL;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -9,14 +9,10 @@ const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const TOKEN_STORAGE_KEY = 'access_token';
 const CURRENCIES_STORAGE_KEY = 'currencies_data';
 
-const FIVE_MINUTES_MS = 5 * 60 * 1000;
-const ONE_HOUR_MS = 60 * 60 * 1000;
-const ONE_MONTH_MS = 30 * 24 * ONE_HOUR_MS;
-
 /**
  * Helper function for fetching cached data
  */
-async function fetchCachedData(date, cacheKey, fetchFunction, isValid) {
+async function fetchCachedData(date, cacheKey, fetchFunction) {
   const generalStore = useGeneralStore();
 
   try {
@@ -28,14 +24,13 @@ async function fetchCachedData(date, cacheKey, fetchFunction, isValid) {
       return cachedData;
     }
 
-    // Fetch API data and wrap with consistent cache structure
     const fetchedData = await fetchFunction();
     const expiresAt = calculateExpiration(date);
-    const dataToCache = { ...fetchedData, expiresAt }; // Preserve structure and add expiresAt
+    const dataToCache = { ...fetchedData, expiresAt };
 
     localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
 
-    return dataToCache; // Return the same structure stored in the cache
+    return dataToCache;
   } catch (error) {
     console.error(`Error fetching cached data for key ${cacheKey}:`, error);
     return null;
@@ -95,7 +90,6 @@ async function fetchCurrencies() {
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
-        // Maintain the exact structure returned by the API
         return response.data.data;
       },
       (cachedData) => !isCacheExpired(cachedData.expiresAt)
@@ -127,7 +121,6 @@ async function fetchRateWithCache(endpoint, cacheKey, source, target, date, call
           params: { source_currency: source, target_currency: target, date }
         });
 
-        // Return the exact API response structure
         return apiResponse.data;
       },
       isValidCache
