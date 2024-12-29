@@ -207,15 +207,13 @@ const updateResults = () => {
   parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate)) : 0;
 };
 
-const lastExecutionTime = ref(0);
-
 const REFRESH_INTERVAL_MS = 120 * 1000;
 
 const canExecuteFullRefresh = (full) => {
   const now = Date.now();
-  const shouldRefresh = full && now - lastExecutionTime.value >= REFRESH_INTERVAL_MS;
+  const shouldRefresh = full && now - generalStore.getLastExecutionTime >= REFRESH_INTERVAL_MS;
   if (shouldRefresh) {
-    lastExecutionTime.value = now;
+    generalStore.setLastExecutionTime(now);
   }
   return shouldRefresh;
 };
