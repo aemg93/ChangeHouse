@@ -207,7 +207,7 @@ const updateResults = () => {
   parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate)) : 0;
 };
 
-const lastExecutionTime = ref(Date.now());
+const lastExecutionTime = ref(0);
 
 const REFRESH_INTERVAL_MS = 120 * 1000;
 
