@@ -1,7 +1,7 @@
 import {api} from 'boot/axios';
 import {useGeneralStore} from '@/stores/general-store';
 import {formatApiErrorMessage} from '@/helpers/error-message-utils';
-import {isToday, normalizeDate} from '@/helpers/date-utils';
+import {getToday, isToday, normalizeDate, calculateExpiration, isCacheExpired} from '@/helpers/date-utils';
 
 const API_BASE_URL = process.env.BASE_URL;
 const CLIENT_ID = process.env.CLIENT_ID;
@@ -16,7 +16,7 @@ const ONE_MONTH_MS = 30 * 24 * ONE_HOUR_MS;
 /**
  * Helper function for fetching cached data
  */
-async function fetchCachedData(cacheKey, fetchFunction, isValid) {
+async function fetchCachedData(date, cacheKey, fetchFunction, isValid) {
   const generalStore = useGeneralStore();
 
   try {
@@ -24,14 +24,18 @@ async function fetchCachedData(cacheKey, fetchFunction, isValid) {
 
     const cachedData = JSON.parse(localStorage.getItem(cacheKey));
 
-    if (cachedData && isValid(cachedData)) {
-      return cachedData.data;
+    if (cachedData && !isCacheExpired(cachedData.expiresAt)) {
+      return cachedData;
     }
 
+    // Fetch API data and wrap with consistent cache structure
     const fetchedData = await fetchFunction();
-    localStorage.setItem(cacheKey, JSON.stringify({ data: fetchedData, timestamp: new Date().getTime() }));
+    const expiresAt = calculateExpiration(date);
+    const dataToCache = { ...fetchedData, expiresAt }; // Preserve structure and add expiresAt
 
-    return fetchedData;
+    localStorage.setItem(cacheKey, JSON.stringify(dataToCache));
+
+    return dataToCache; // Return the same structure stored in the cache
   } catch (error) {
     console.error(`Error fetching cached data for key ${cacheKey}:`, error);
     return null;
@@ -80,16 +84,21 @@ async function fetchCurrencies() {
     const token = await getToken();
     validateToken(token);
 
+    const date = '2020/01/01';
+
     return fetchCachedData(
+      date,
       CURRENCIES_STORAGE_KEY,
       async () => {
         const response = await api.get(
           `${API_BASE_URL}/api/currency-exchange/currencies?type=all`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        return response.data.data.data;
+
+        // Maintain the exact structure returned by the API
+        return response.data.data;
       },
-      (cachedData) => new Date().getTime() - cachedData.timestamp < ONE_MONTH_MS
+      (cachedData) => !isCacheExpired(cachedData.expiresAt)
     );
   } catch (error) {
     console.error('Error fetching currencies:', error);
@@ -110,12 +119,16 @@ async function fetchRateWithCache(endpoint, cacheKey, source, target, date, call
     validateToken(token);
 
     const response = await fetchCachedData(
+      date,
       cacheKey,
       async () => {
-        return await api.get(endpoint, {
+        const apiResponse = await api.get(endpoint, {
           headers: { Authorization: `Bearer ${token}` },
           params: { source_currency: source, target_currency: target, date }
-        }).then((res) => res.data);
+        });
+
+        // Return the exact API response structure
+        return apiResponse.data;
       },
       isValidCache
     );
@@ -179,8 +192,7 @@ async function fetchExchangeRate(source, target, date) {
     'default_exchange_rate',
     todayCheck,
     (cachedData) => {
-      const cacheAge = new Date().getTime() - cachedData.timestamp;
-      return todayCheck ? cacheAge < FIVE_MINUTES_MS : cacheAge < ONE_MONTH_MS;
+      return !isCacheExpired(cachedData.expiresAt);
     }
   );
 }
@@ -198,15 +210,11 @@ async function fetchParallelRate(source, target, date) {
     'default_parallel_rate',
     todayCheck,
     (cachedData) => {
-      const cacheAge = new Date().getTime() - cachedData.timestamp;
-      return todayCheck ? cacheAge < FIVE_MINUTES_MS : cacheAge < ONE_MONTH_MS;
+      return !isCacheExpired(cachedData.expiresAt);
     }
   );
 }
 
-/**
- * Utility function to validate token availability.
- */
 function validateToken(token) {
   if (!token) {
     throw new Error('No token available');
