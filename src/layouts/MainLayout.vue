@@ -12,11 +12,14 @@
           class="text-white"
         />
 
-        <q-toolbar-title>
+        <q-toolbar-title class="text-bold">
           {{ appName }}
         </q-toolbar-title>
         <template v-if="$route.name === 'index'">
           <CaptureShareComponent />
+        </template>
+        <template v-else>
+          <GoToIndexComponent />
         </template>
       </q-toolbar>
     </q-header>
@@ -29,7 +32,7 @@
     >
       <q-list>
         <q-item-label header class="text-black text-center link-menu">
-         Menú principal
+          {{ appName }}
         </q-item-label>
 
         <EssentialLink
@@ -59,6 +62,7 @@
 import { ref } from 'vue'
 import EssentialLink from 'components/EssentialLink.vue';
 import CaptureShareComponent from '@/components/CaptureShareComponent.vue';
+import GoToIndexComponent from "@/components/GoToIndexComponent.vue";
 const isFooterVisible = ref(true);
 const messageRepetitionCount = ref(0);
 
