@@ -26,20 +26,20 @@ const team = ref([
   {
     name: "José R. Gutierrez",
     role: "Senior FullStack Developer",
-    image: new URL("./../assets/JoseG.jpg", import.meta.url)
+    image: new URL("./../assets/JoseG.png", import.meta.url)
   },
   {
-    name: "Miguel González",
-    role: "Mid-level FrontEnd Developer",
-    image: new URL("./../assets/MiguelG.jpg", import.meta.url)
+    name: "Miguel E. González",
+    role: "Mid FrontEnd Developer",
+    image: new URL("./../assets/MiguelG.png", import.meta.url)
   },
   {
-    name: "Julio Uranga",
+    name: "Cesar J. Uranga",
     role: "Junior BackEnd Developer",
-    image: new URL("./../assets/JulioU.jpg", import.meta.url)
+    image: new URL("./../assets/JulioU.png", import.meta.url)
   },
   {
-    name: "Ángel Moreno",
+    name: "Ángel E. Moreno",
     role: "Junior FrontEnd Developer",
     image: new URL("./../assets/AngelM.png", import.meta.url)
   }
@@ -97,61 +97,34 @@ const team = ref([
 }
 
 .team-image-container {
-  flex: 0 0 40%;
+  flex: 0 0 35%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .team-image {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
+  width: 100px;
+  height: 100px;
+  /* border-radius: 50%; */
+  object-fit: contain;
 }
 
 .team-text-container {
   flex: 1;
   text-align: left;
-  padding-left: 20px;
+  padding-left: 15px;
 }
 
 .team-name {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: bold;
+  margin-top: 0;
   margin-bottom: 0;
 }
 
 .team-role {
-  font-size: 1rem;
+  font-size: 0.9rem;
   color: #777;
-}
-
-.contact-container {
-  margin-top: 20px;
-}
-
-.note {
-  font-size: 0.8rem;
-  color: #555;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
-.contact-info {
-  font-size: 1rem;
-  color: #333;
-  p {
-    margin-bottom: 0;
-  }
-}
-
-.contact-link {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.contact-link:hover {
-  text-decoration: underline;
 }
 </style>
