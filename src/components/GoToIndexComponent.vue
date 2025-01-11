@@ -6,7 +6,7 @@
     color="blue"
     class="q-px-sm"
   >
-    <q-icon name="currency_exchange" />
+    <q-icon name="assured_workload" />
   </q-btn>
 </template>
 
