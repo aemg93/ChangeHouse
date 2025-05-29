@@ -1,219 +1,354 @@
 <template>
   <q-page>
     <div class="container">
-      <div class="q-pa-md" style="max-width: 100%">
+      <div style="max-width: 100%">
+        <div class="row items-center justify-between">
+          <div class="col">
+            <q-input
+              filled
+              v-model="date"
+              mask="date"
+              :rules="['date']"
+              input-class=""
+              hint="Desde el 01/01/2000"
+              persistent-hint
+              label="Fecha"
+              :input-style="{ fontSize: '1.2rem' }"
+              readonly
+              @click="openCalendar"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy ref="dateProxy" cover transition-show="scale" transition-hide="scale">
+                    <q-date
+                      v-model="date"
+                      @update:model-value="dateProxy.hide()"
+                      :options="disableDates"
+                      :locale="locale"
+                    >
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Cerrar" color="primary" flat></q-btn>
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+          <div class="col q-ml-sm">
+            <AmountInput v-model="amount" />
+          </div>
+        </div>
 
-        <q-input
-          filled
-          v-model="date"
-          mask="date"
-          :rules="['date']"
-        >
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy ref="dateProxy" cover transition-show="scale" transition-hide="scale">
-                <q-date
-                  v-model="date"
-                  @update:model-value="dateProxy.hide()"
-                  :options="disableFutureDates"
-                >
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat></q-btn>
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
+        <div class="row no-wrap q-mt-md">
+          <q-btn
+            flat
+            color="blue"
+            class="col q-mr-xs btn-reset"
+            @click="resetData"
+          >
+            <span>Res.</span>
+            <q-icon name="refresh" class="q-ml-xs" />
+            <q-tooltip :hide-delay="700" class="bg-blue text-white">
+              Restableciendo
+            </q-tooltip>
+          </q-btn>
 
-        <q-input
-          filled
-          v-model.number="amount"
-          label="Cantidad"
-          fill-mask="0"
-          reverse-fill-mask
-          input-class="text-right"
-          @input="validateInput"
-        />
+          <q-btn
+            flat
+            color="orange"
+            class="col q-mx-xs btn-exchange"
+            @click="exchangeCurrencies"
+          >
+            <span>Int.</span>
+            <q-icon name="swap_horiz" class="q-ml-xs" />
+            <q-tooltip :hide-delay="700" class="bg-orange text-white">
+              Intercambiando
+            </q-tooltip>
+          </q-btn>
 
-        <q-select
+          <q-btn
+            flat
+            color="green"
+            class="col q-ml-xs btn-refresh"
+            @click="refreshResults(true)"
+          >
+            <span>Act.</span>
+            <q-icon name="update" class="q-ml-xs" />
+            <q-tooltip :hide-delay="700" class="bg-green text-white">
+              Actualizando
+            </q-tooltip>
+          </q-btn>
+        </div>
+
+        <CurrencySelect
           v-model="currencyFrom"
           :options="filteredOptionsFrom"
-          use-input
-          input-debounce="0"
-          class="select q-mt-sm"
-          filled
-          label="Desde"
-          emit-value
-          map-options
-          dropdown-icon="las la-angle-down"
-          @filter="filterFrom"
-        >
-          <template v-slot:no-option>
-            <q-item>
-              <q-item-section class="text-grey">
-                Sin resultados
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
+          label="Moneda de origen"
+          :filter-handler="filterFrom"
+          @update:model-value="(value) => handleCurrencySelection(value, 'from')"
+        />
 
-        <q-select
+        <CurrencySelect
           v-model="currencyTo"
           :options="filteredOptionsTo"
-          use-input
-          input-debounce="0"
-          class="select q-mt-sm"
-          filled
-          label="A"
-          emit-value
-          map-options
-          dropdown-icon="fas las la-angle-down"
-          @filter="filterTo"
-        >
-          <template v-slot:no-option>
-            <q-item>
-              <q-item-section class="text-grey">
-                Sin resultados
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-select>
+          label="Moneda destino"
+          :filter-handler="filterTo"
+          @update:model-value="(value) => handleCurrencySelection(value, 'to')"
+        />
       </div>
 
-      <div class="q-mt-md q-mb-md">
-        <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(amount, currencyFrom)}` }}</div>
-        <div v-if="!generalStore.loading && result !== null" class="result">Equivale a</div>
-        <div v-if="generalStore.error" class="error">{{ generalStore.error }}</div>
+      <div class="q-mt-md q-mb-md result-label">
+        <div v-if="!generalStore.loading && result !== null">{{ `${currencyFormat(amount, currencyFrom)}` }} equivale a</div>
       </div>
 
-      <q-card dark bordered class="bg-grey-9 my-card">
-        <q-card-section>
-          <div class="text-subtitle2" v-if="showParallelRate">Tasa oficial</div>
+      <q-card dark bordered class="bg-positive text-dark my-card q-pt-md">
+        <q-card-section class="show-result">
+          <div class="text-subtitle2">Tasa {{ showParallelRate ? 'oficial BCV' : 'de Cambio'}}</div>
           <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(result, currencyTo)}` }}</div>
         </q-card-section>
-        <q-separator dark inset v-if="showParallelRate" />
-        <q-card-section v-if="showParallelRate">
+        <q-card-section class="show-result" v-if="showParallelRate">
           <div class="text-subtitle2">Tasa paralela</div>
-          <div v-if="!generalStore.loading && result !== null" class="result">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
+          <div v-if="!generalStore.loading && parallelResult !== null" class="result">{{ `${currencyFormat(parallelResult, currencyTo)}` }}</div>
         </q-card-section>
+        <q-card-section class="show-result" v-if="showParallelRate && averageRate !== null">
+          <div class="text-subtitle2">Tasa promedio</div>
+          <div class="result">{{ `${currencyFormat(averageRate, currencyTo)}` }}</div>
+        </q-card-section>
+        <div class="q-mb-sm"></div>
       </q-card>
-      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md">De {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}</div>
-
+      <div v-if="!generalStore.loading && result !== null" class="result q-mt-md">
+        Resultado de la conversión: de {{ nameCurrencyFrom }} a {{ nameCurrencyTo }}
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, onActivated, watch } from 'vue';
+import { debounce } from 'lodash';
 import { useCurrencyStore } from '@/stores/currency-store';
 import { useExchangeRateStore } from '@/stores/exchange-rate-store';
 import { useGeneralStore } from '@/stores/general-store';
-import { currencyFormat } from "@/helpers/currency-utils";
-import { getTodayForCalendar } from '@/helpers/date-utils';
+import { currencyFormat } from '@/helpers/currency-utils';
+import { getTodayForCalendar, getMinDateForCalendar } from '@/helpers/date-utils';
+import AmountInput from '@/components/exchange-rates/AmountInput.vue';
+import CurrencySelect from '@/components/CurrencySelect.vue';
+import useCurrencySelection from '@/composables/useCurrencySelection';
+import { useQuasar } from 'quasar';
+import { clearMidnightExpiringItems } from "@/helpers/local-storage-utils";
 
 // Initial status
 const amount = ref(1);
-const currencyFrom = ref('USD');
-const currencyTo = ref('VES');
 const result = ref(0);
 const parallelResult = ref(0);
 const date = ref(getTodayForCalendar());
 const dateProxy = ref(null);
-const searchFrom = ref('');
-const searchTo = ref('');
+
+const isInitialized = ref(false);
+
 const currencyStore = useCurrencyStore();
+const {
+  currencyFrom,
+  currencyTo,
+  filteredOptionsFrom,
+  filteredOptionsTo,
+  loadSettings,
+  handleCurrencySelection,
+  filterFrom,
+  filterTo
+} = useCurrencySelection(currencyStore);
 const exchangeRateStore = useExchangeRateStore();
 const generalStore = useGeneralStore();
+const $q = useQuasar();
 
-// Disable future dates
-const disableFutureDates = (inputDate) => inputDate <= getTodayForCalendar();
+const locale = ref({
+  days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+  daysShort: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+  months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+  monthsShort: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+  firstDayOfWeek: 1,
+  format24h: true,
+  pluralDay: 'dias',
+});
 
-// Remove accents from a string
-const removeAccents = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+const openCalendar = () => {
+  dateProxy.value.show();
+};
 
-// Computed properties
-const options = computed(() =>
-  currencyStore.getCurrencies.map(currency => ({
-    label: currency.name,
-    value: currency.code
-  }))
-);
+const disableDates = (inputDate) => {
+  const minDate = getMinDateForCalendar();
+  const maxDate = getTodayForCalendar();
+  return inputDate >= minDate && inputDate <= maxDate;
+};
 
 const showParallelRate = computed(() => currencyFrom.value === 'VES' || currencyTo.value === 'VES');
 
-const filteredOptionsFrom = computed(() => {
-  return options.value.filter(option => {
-    const label = removeAccents(option.label.toLowerCase());
-    const search = removeAccents(searchFrom.value.toLowerCase());
-    return option.value !== currencyTo.value && label.includes(search);
-  });
+const averageRate = computed(() => {
+  if (result.value && parallelResult.value) {
+    return (result.value + parallelResult.value) / 2;
+  }
+  return null;
 });
 
-const filteredOptionsTo = computed(() => {
-  return options.value.filter(option => {
-    const label = removeAccents(option.label.toLowerCase());
-    const search = removeAccents(searchTo.value.toLowerCase());
-    return option.value !== currencyFrom.value && label.includes(search);
-  });
-});
-
-// Computed properties for symbols and coin names
 const getCurrencyProperty = (currencyCode, property) => {
   const currency = currencyStore.getCurrencies.find(currency => currency.code === currencyCode);
   return currency ? currency[property] : currencyCode;
 };
 
-const symbolCurrencyFrom = computed(() => getCurrencyProperty(currencyFrom.value, 'symbol'));
-const symbolCurrencyTo = computed(() => getCurrencyProperty(currencyTo.value, 'symbol'));
 const nameCurrencyFrom = computed(() => getCurrencyProperty(currencyFrom.value, 'name'));
 const nameCurrencyTo = computed(() => getCurrencyProperty(currencyTo.value, 'name'));
 
-// Filter for search inputs
-const filterFrom = (val, update) => {
-  searchFrom.value = val;
-  update();
-};
-
-const filterTo = (val, update) => {
-  searchTo.value = val;
-  update();
-};
-
-// Update of conversion results
 const updateResults = () => {
   const rate = exchangeRateStore.getExchangeRate;
   const parallelRate = exchangeRateStore.getParallelRate;
-  result.value = amount.value && rate ? parseFloat((amount.value * rate).toFixed(4)) : 0;
-  parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate).toFixed(4)) : 0;
+
+  result.value = amount.value && rate ? parseFloat((amount.value * rate)) : 0;
+  parallelResult.value = amount.value && parallelRate ? parseFloat((amount.value * parallelRate)) : 0;
 };
 
-//Initial assembly
-onMounted(async () => {
+const REFRESH_INTERVAL_MS = 120 * 1000;
+
+const canExecuteFullRefresh = (full) => {
+  const now = Date.now();
+  const shouldRefresh = full && now - generalStore.getLastExecutionTime >= REFRESH_INTERVAL_MS;
+  if (shouldRefresh) {
+    generalStore.setLastExecutionTime(now);
+  }
+  return shouldRefresh;
+};
+
+const executeRefresh = async (full = false) => {
+  if (canExecuteFullRefresh(full)) await clearMidnightExpiringItems();
+};
+
+const refreshResults = async (full = false) => {
+  await executeRefresh(full);
+  result.value = 0;
+  parallelResult.value = 0;
+  generalStore.loading = true;
+  try {
+    if (currencyFrom.value && currencyTo.value && currencyFrom.value !== currencyTo.value && date.value) {
+      const promises = [
+        exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }),
+      ];
+
+      if (showParallelRate.value) {
+        promises.push(exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value }));
+      }
+      await Promise.all(promises);
+      updateResults();
+    }
+  } catch (error) {
+    generalStore.error = 'No se pudieron obtener los datos. Por favor, inténtalo más tarde.';
+  } finally {
+    generalStore.loading = false;
+  }
+};
+
+const exchangeCurrencies = async () => {
+  const CURRENCY_FROM = currencyFrom.value;
+  currencyFrom.value = currencyTo.value;
+  currencyTo.value = CURRENCY_FROM;
+}
+
+const resetData = async () => {
+  loadSettings();
+  date.value = getTodayForCalendar();
+  amount.value = 1;
+}
+
+const initializeData = async () => {
+  if (generalStore.getInitialLoad) {
+    loadSettings();
+    generalStore.updateCurrentCurrencies(currencyFrom.value, currencyTo.value);
+    generalStore.setInitialLoad(false);
+  }
   await currencyStore.fetchCurrencies();
-  await exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value });
-  if (showParallelRate.value) {
-    await exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value });
+  await refreshResults();
+};
+
+onMounted(async () => {
+  if (!isInitialized.value && parseInt(exchangeRateStore.getExchangeRate, 0) !== 0) {
+    await initializeData();
+    isInitialized.value = true;
+  } else if (parseInt(exchangeRateStore.getExchangeRate, 0) === 0) {
+    await resetData();
   }
 });
 
-// Reactive observers
-watch([currencyFrom, currencyTo, date], async () => {
-  if (currencyFrom.value && currencyTo.value && date.value) {
-    await exchangeRateStore.fetchExchangeRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value });
-    if (showParallelRate.value) {
-      await exchangeRateStore.fetchParallelRate({ source: currencyFrom.value, target: currencyTo.value, date: date.value });
+onActivated(async () => {
+  if (!isInitialized.value) {
+    await initializeData();
+    isInitialized.value = true;
+  }
+});
+
+const debouncedUpdateResults = debounce(updateResults, 200);
+
+watch([currencyFrom, currencyTo, date], () => refreshResults());
+watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], debouncedUpdateResults);
+watch(
+  () => generalStore.error,
+  (newError) => {
+    if (newError && typeof newError === 'string') {
+      $q.notify({
+        type: 'negative',
+        message: newError,
+        position: 'center',
+        timeout: 3500,
+        actions: [{ icon: 'close', color: 'black' }],
+        classes: 'custom-notify-error'
+      });
+
+      setTimeout(() => generalStore.error = '',3500);
     }
   }
-});
-
-watch([amount, () => exchangeRateStore.getExchangeRate, () => exchangeRateStore.getParallelRate], updateResults);
-
-// Validate the input of the amount
-const validateInput = (event) => {
-  const value = event.target.value;
-  const sanitizedInput = value.replace(/[^0-9.]/g, '');
-  amount.value = sanitizedInput ? parseFloat(sanitizedInput) : 0;
-};
+);
 </script>
 
+<style scoped>
+.container {
+  margin: 0 -30px;
+}
+.result-label {
+  font-size: 1rem;
+  margin: 8px 5px 5px;
+}
+.show-result {
+  margin: -10px 10px;
+}
+.text-subtitle2 {
+  margin-top: -12px;
+}
+.my-card .result {
+  font-size: 20px;
+  font-weight: bold;
+  font-family: DialogInput, serif;
+  background: #83ffa2;
+  padding: 5px 0;
+  margin-top: 5px;
+}
+
+.btn-reset {
+  background-color: #e0f7fa;
+  color: #00796b;
+  font-weight: bold;
+}
+
+.btn-exchange {
+  background-color: #ffe0b2;
+  color: #ef6c00;
+  font-weight: bold;
+}
+
+.btn-refresh {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+.q-btn span {
+  font-size: 0.9rem; /* Tamaño del texto */
+}
+</style>

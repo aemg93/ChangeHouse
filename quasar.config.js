@@ -12,6 +12,9 @@
 const { configure } = require('quasar/wrappers');
 const path = require('node:path');
 
+const dotenv = require('dotenv').config().parsed;
+// console.log('Variables de entorno:', dotenv);
+
 
 module.exports = configure(function (/* ctx */) {
   return {
@@ -62,7 +65,7 @@ module.exports = configure(function (/* ctx */) {
       // publicPath: '/',
       // analyze: true,
       // env: {},
-      env: require('dotenv').config().parsed,
+      env: dotenv,
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
@@ -107,7 +110,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: []
+      plugins: ['Notify']
     },
 
     // animations: 'all', // --- includes all animations
@@ -197,7 +200,7 @@ module.exports = configure(function (/* ctx */) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'changehouse'
+        appId: 'exchange-rates',
       }
     },
 

@@ -2,18 +2,16 @@ const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    redirect: { name: 'index' }, // Redirige a la ruta Index
     children: [
-      { path: '', component: () => import('pages/IndexPage.vue') },
-      { path: 'MyRate.vue', name:'TasaBCV', component: () => import('pages/MyRate.vue') },
-      { path: 'MyRecord', name:'Historial', component: () => import('pages/MyRecord.vue') },
-      { path: 'PaymentProfiles', name:'PerfilDePago', component: () => import('pages/PaymentProfiles.vue') },
-      { path: 'MyConfiguration', name:'Configuracion', component: () => import('pages/MyConfiguration.vue') },
-      { path: 'MyInformation', name:'Informacion', component: () => import('pages/MyInformation.vue') },
+      { path: 'index', name: 'index', component: () => import('pages/IndexPage.vue') },
+      { path: 'settings', name: 'settings', component: () => import('pages/SettingsPage.vue') },
+      { path: 'about-us', name: 'about-us', component: () => import('pages/AboutUs.vue') },
+      { path: 'services', name: 'services', component: () => import('pages/ServicesPage.vue') },
+      { path: 'credits', name: 'credits', component: () => import('@/pages/CreditsPage.vue') },
+      { path: 'disclaimer', name: 'disclaimer', component: () => import('@/pages/DisclaimerPage.vue') },
     ]
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue')

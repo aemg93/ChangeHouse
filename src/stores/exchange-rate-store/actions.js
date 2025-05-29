@@ -11,5 +11,11 @@ export const actions = {
     date = date || getToday();
     const rate = await apiAdapter.fetchParallelRate(source, target, date);
     this.parallelRate = rate.data.exchange_rate;
+  },
+  setExchangeRate(rate) {
+    this.exchangeRate = rate;
+  },
+  setParallelRate(rate) {
+    this.parallelRate = rate;
   }
 };

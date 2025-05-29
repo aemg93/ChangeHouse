@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="bg-dark text-white">
+  <q-layout view="lHh Lpr lFf">
     <q-header elevated class="bg-dark">
       <q-toolbar>
         <q-btn
@@ -7,16 +7,20 @@
           dense
           round
           icon="las la-bars"
-          aria-label="Menu"
+          aria-label="Manú principal"
           @click="toggleLeftDrawer"
           class="text-white"
         />
 
-        <q-toolbar-title>
-          Tasa Cambiaria
+        <q-toolbar-title class="text-bold">
+          {{ appName }}
         </q-toolbar-title>
-
-        <div>Quasar v{{ $q.version }}</div>
+        <template v-if="$route.name === 'index'">
+          <CaptureShareComponent />
+        </template>
+        <template v-else>
+          <GoToIndexComponent />
+        </template>
       </q-toolbar>
     </q-header>
 
@@ -24,11 +28,11 @@
       v-model="leftDrawerOpen"
       show-if-above
       bordered
-      class="bg-dark"
+      class=""
     >
       <q-list>
-        <q-item-label header class="text-white">
-          Essential Links
+        <q-item-label header class="text-black text-center link-menu">
+          {{ appName }}
         </q-item-label>
 
         <EssentialLink
@@ -39,72 +43,144 @@
       </q-list>
     </q-drawer>
 
-    <q-page-container class="bg-grey-9">
+    <q-page-container class="page-container">
       <router-view />
     </q-page-container>
+    <q-footer class="footer-bar" v-if="isFooterVisible">
+      <div
+        class="scrolling-message"
+        ref="scrollingMessage"
+        @animationiteration="incrementMessageCount"
+      >
+        Disfruta de nuestra app totalmente gratis y sin publicidad.
+      </div>
+    </q-footer>
   </q-layout>
 </template>
 
 <script setup>
-import {ref} from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { ref } from 'vue'
+import EssentialLink from 'components/EssentialLink.vue';
+import CaptureShareComponent from '@/components/CaptureShareComponent.vue';
+import GoToIndexComponent from "@/components/GoToIndexComponent.vue";
+const isFooterVisible = ref(true);
+const messageRepetitionCount = ref(0);
 
 defineOptions({
   name: 'MainLayout'
 })
 
+const appName = process.env.APP_NAME;
+
 const linksList = [
   {
-    title: 'Calculadora',
+    title: 'Tasa de Cambio',
     caption: '',
-    icon: 'las la-exchange-rates',
-    link: 'Calculadora'
+    icon: 'las la-exchange-alt',
+    link: 'index'
   },
   {
-    title: 'Tasa BCV',
-    caption: '',
-    icon: 'las la-chart-bar',
-    link: 'TasaBCV'
-  },
-  {
-    title: 'Historial',
-    caption: '',
-    icon: 'las la-clipboard',
-    link: 'Historial'
-  },
-  {
-    title: 'PerfilesDePago',
-    caption: '',
-    icon: 'las la-file-invoice-dollar',
-    link: 'PerfilDePago'
-  },
-  {
-    title: 'Configuracion',
+    title: 'Ajustes',
     caption: '',
     icon: 'las la-cog',
-    link: 'Configuracion'
+    link: 'settings'
   },
   {
-    title: 'Informacion',
+    title: 'Nuestros Servicios',
     caption: '',
-    icon: 'las la-info',
-    link: 'Informacion'
+    icon: 'las la-laptop-code',
+    link: 'services'
   },
-]
+  {
+    title: 'Acerca de',
+    caption: '',
+    icon: 'las la-info-circle',
+    link: 'about-us'
+  },
+  {
+    title: 'Créditos',
+    caption: '',
+    icon: 'las la-users',
+    link: 'credits'
+  },
+  {
+    title: 'Descargo de Responsabilidad',
+    caption: '',
+    icon: 'las la-exclamation-triangle',
+    link: 'disclaimer'
+  },
+];
 
 const leftDrawerOpen = ref(false)
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
+
+function incrementMessageCount() {
+  messageRepetitionCount.value++;
+  if (messageRepetitionCount.value >= 3) {
+    isFooterVisible.value = false;
+  }
+}
 </script>
 
-<style>
-.bg-dark {
-  background-color: #1d1d1d;
+<style scoped>
+.page-container {
+  background: #F8F9FA;
+  min-height: 100vh !important;
+}
+.active-link {
+  background-color: #080808 !important;
+  color: #ffffff !important;
+}
+.link-menu {
+  font-size: 2rem;
+}
+.footer-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #3985fa;
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  overflow: hidden;
+  z-index: 2;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.text-white {
-  color: #ffffff;
+.scrolling-message {
+  display: inline-block;
+  white-space: nowrap;
+  animation: scroll-left 8s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+</style>
+
+<style>
+.q-field__native:has(input[aria-expanded="true"]) span {
+  display: none !important;
+}
+.q-field__control:before,
+.q-field__control:after {
+  content: unset !important;
+}
+.custom-notify-error {
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
 }
 </style>
